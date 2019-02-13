@@ -1,14 +1,19 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 module Lib where
 
+import Control.Arrow (left)
 import Data.ByteString (ByteString)
 import Data.Map (Map)
 import Data.Text (Text)
+import GHC.Generics (Generic)
 
+import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
-import qualified Data.Text.Lazy as Text.Lazy
+import qualified Data.Text.Encoding as Text.Encoding
 import qualified Web.Scotty as Scotty
 import qualified Network.Wai as Wai
 
@@ -29,7 +34,7 @@ data Request
       , method  :: Method
       -- , headers :: Map Text Text
       -- , params  :: Map Text Text
-      , body    :: ByteString
+      , body    :: Text
       }
   deriving (Eq, Show)
 
@@ -49,7 +54,7 @@ createRequest = do
 
   -- headers' <- makeStrictTuple <$> Scotty.headers
   -- params' <- makeStrictTuple <$> Scotty.params
-  body' <- ByteString.Lazy.toStrict <$> Scotty.body
+  body' <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
 
   pure Request
     { path    = Text.intercalate "/" (Wai.pathInfo req)
@@ -64,13 +69,29 @@ simpleServer port toResponse
   = Scotty.scotty port $ do
       Scotty.notFound $ do
         req <- createRequest
-        let res = toResponse req
+        let !res = toResponse req
         Debug.traceShowM req
         Scotty.json ("ciao" :: String)
 
-makeStrictTuple :: [(Text.Lazy.Text, Text.Lazy.Text)] -> [(Text, Text)]
-makeStrictTuple xs
-  = go <$> xs
+decodeJson :: Aeson.FromJSON a => Text -> Either Text a
+decodeJson input
+  = left Text.pack $ Aeson.eitherDecode' (toLazy input)
   where
-    go (a, b) = (Text.Lazy.toStrict a, Text.Lazy.toStrict b)
+    toLazy = ByteString.Lazy.fromStrict . Text.Encoding.encodeUtf8
+
+data Add = Add { a :: Int, b :: Int }
+  deriving (Eq, Show, Generic)
+
+instance Aeson.FromJSON Add
+
+testResponse :: Request -> Response
+testResponse req
+  = let parsed = decodeJson @Add (body req)
+    in Debug.traceShow parsed Response
+
+-- makeStrictTuple :: [(Text.Lazy.Text, Text.Lazy.Text)] -> [(Text, Text)]
+-- makeStrictTuple xs
+  -- = go <$> xs
+  -- where
+    -- go (a, b) = (Text.Lazy.toStrict a, Text.Lazy.toStrict b)
 

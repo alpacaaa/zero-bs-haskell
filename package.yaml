@@ -20,6 +20,7 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/githubuser/request-response#readme>
 
 dependencies:
+- aeson
 - base
 - bytestring
 - containers
