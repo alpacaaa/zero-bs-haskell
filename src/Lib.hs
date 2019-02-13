@@ -27,8 +27,8 @@ data Request
   = Request
       { path    :: Text
       , method  :: Method
-      , headers :: Map Text Text
-      , params  :: Map Text Text
+      -- , headers :: Map Text Text
+      -- , params  :: Map Text Text
       , body    :: ByteString
       }
   deriving (Eq, Show)
@@ -47,15 +47,15 @@ createRequest = do
             "POST" -> MethodPOST
             _      -> MethodOTHER
 
-  headers' <- makeStrictTuple <$> Scotty.headers
-  params' <- makeStrictTuple <$> Scotty.params
+  -- headers' <- makeStrictTuple <$> Scotty.headers
+  -- params' <- makeStrictTuple <$> Scotty.params
   body' <- ByteString.Lazy.toStrict <$> Scotty.body
 
   pure Request
     { path    = Text.intercalate "/" (Wai.pathInfo req)
     , method  = method'
-    , headers = Map.fromList headers'
-    , params  = Map.fromList params'
+    -- , headers = Map.fromList headers'
+    -- , params  = Map.fromList params'
     , body    = body'
     }
 
