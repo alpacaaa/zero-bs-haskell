@@ -59,7 +59,7 @@ createRequest = do
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
 
   pure Request
-    { path   = Text.intercalate "/" (Wai.pathInfo req)
+    { path   = "/" <> Text.intercalate "/" (Wai.pathInfo req)
     , method = method'
     , requestBody = body
     }
@@ -98,7 +98,13 @@ instance Aeson.FromJSON Add
 
 testResponse :: Request -> Response
 testResponse req
-  = let parsed = decodeJson @Add (requestBody req)
-    in case parsed of
-      Right (Add x y) -> okResponse (x + y)
-      Left err        -> failureResponse err
+  = case path req of
+      "/math/add" ->
+        let
+          parsed = decodeJson @Add (requestBody req)
+        in
+        case parsed of
+          Right (Add x y) -> okResponse (x + y)
+          Left err        -> failureResponse err
+      _ ->
+        failureResponse "Invalid path"
