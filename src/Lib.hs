@@ -45,6 +45,7 @@ data Request
 data Response where
   OkResponse :: Aeson.ToJSON a => a -> Response
   FailureResponse :: Text -> Response
+  OkResponseEffects :: Aeson.ToJSON a => IO a -> Response
 
 createRequest :: Scotty.ActionM Request
 createRequest = do
@@ -76,6 +77,8 @@ simpleServer port toResponse
             Scotty.json body
           FailureResponse err ->
             Scotty.raise $ Text.Lazy.fromStrict err
+          OkResponseEffects f ->
+            Scotty.liftAndCatchIO f >>= Scotty.json
 
 decodeJson :: Aeson.FromJSON a => Text -> Either Text a
 decodeJson input
@@ -90,6 +93,10 @@ okResponse body
 failureResponse :: Text -> Response
 failureResponse err
   = FailureResponse err
+
+effectfulResponse :: Aeson.ToJSON a => IO a -> Response
+effectfulResponse f
+  = OkResponseEffects f
 
 data Add = Add { a :: Int, b :: Int }
   deriving (Eq, Show, Generic)
@@ -106,5 +113,9 @@ testResponse req
         case parsed of
           Right (Add x y) -> okResponse (x + y)
           Left err        -> failureResponse err
+
+      "/math/random" ->
+        effectfulResponse @String (putStrLn "fire the missiles" *> pure "dio")
+
       _ ->
         failureResponse "Invalid path"
