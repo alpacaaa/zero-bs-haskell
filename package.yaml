@@ -28,6 +28,7 @@ dependencies:
 - base
 - bytestring
 - containers
+- random
 - scotty
 - text
 - wai

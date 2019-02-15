@@ -14,6 +14,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.Wai as Wai
+import qualified System.Random as Random
 import qualified Web.Scotty as Scotty
 
 import qualified Debug.Trace as Debug
@@ -29,23 +30,16 @@ data Method
 
 data Request
   = Request
-      { path   :: Text
-      , method :: Method
-      , requestBody :: Text
+      { requestPath   :: Text
+      , requestMethod :: Method
+      , requestBody   :: Text
       }
   deriving (Eq, Show)
 
--- data Response
-  -- = Response
-      -- { statusCode   :: Int
-      -- , responseBody :: Text
-      -- }
-  -- deriving (Eq, Show)
-
 data Response where
-  OkResponse :: Aeson.ToJSON a => a -> Response
-  FailureResponse :: Text -> Response
+  OkResponse        :: Aeson.ToJSON a => a -> Response
   OkResponseEffects :: Aeson.ToJSON a => IO a -> Response
+  FailureResponse   :: Text -> Response
 
 createRequest :: Scotty.ActionM Request
 createRequest = do
@@ -60,9 +54,9 @@ createRequest = do
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
 
   pure Request
-    { path   = "/" <> Text.intercalate "/" (Wai.pathInfo req)
-    , method = method'
-    , requestBody = body
+    { requestPath   = "/" <> Text.intercalate "/" (Wai.pathInfo req)
+    , requestMethod = method'
+    , requestBody   = body
     }
 
 simpleServer :: Int -> (Request -> Response) -> IO ()
@@ -105,7 +99,7 @@ instance Aeson.FromJSON Add
 
 testResponse :: Request -> Response
 testResponse req
-  = case path req of
+  = case requestPath req of
       "/math/add" ->
         let
           parsed = decodeJson @Add (requestBody req)
@@ -115,7 +109,7 @@ testResponse req
           Left err        -> failureResponse err
 
       "/math/random" ->
-        effectfulResponse @String (putStrLn "fire the missiles" *> pure "dio")
+        effectfulResponse @Int $ Random.randomRIO (1, 100)
 
       _ ->
         failureResponse "Invalid path"
