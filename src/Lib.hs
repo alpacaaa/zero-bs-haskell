@@ -37,9 +37,8 @@ data Request
   deriving (Eq, Show)
 
 data Response where
-  OkResponse        :: Aeson.ToJSON a => a -> Response
-  OkResponseEffects :: Aeson.ToJSON a => IO a -> Response
-  FailureResponse   :: Text -> Response
+  OkResponse      :: Aeson.ToJSON a => a -> Response
+  FailureResponse :: Text -> Response
 
 createRequest :: Scotty.ActionM Request
 createRequest = do
@@ -66,13 +65,25 @@ simpleServer port toResponse
         req <- createRequest
         Debug.traceShowM req
 
-        case toResponse req of
-          OkResponse body ->
-            Scotty.json body
-          FailureResponse err ->
-            Scotty.raise $ Text.Lazy.fromStrict err
-          OkResponseEffects f ->
-            Scotty.liftAndCatchIO f >>= Scotty.json
+        handleResponse (toResponse req)
+
+handleResponse :: Response -> Scotty.ActionM ()
+handleResponse res
+  = case res of
+      OkResponse body ->
+        Scotty.json body
+      FailureResponse err ->
+        Scotty.raise $ Text.Lazy.fromStrict err
+
+effectfulServer :: Int -> (Request -> IO Response) -> IO ()
+effectfulServer port toResponse
+  = Scotty.scotty port $ do
+      Scotty.notFound $ do
+        req <- createRequest
+        Debug.traceShowM req
+
+        res <- Scotty.liftAndCatchIO $ toResponse req
+        handleResponse res
 
 decodeJson :: Aeson.FromJSON a => Text -> Either Text a
 decodeJson input
@@ -87,10 +98,6 @@ okResponse body
 failureResponse :: Text -> Response
 failureResponse err
   = FailureResponse err
-
-effectfulResponse :: Aeson.ToJSON a => IO a -> Response
-effectfulResponse f
-  = OkResponseEffects f
 
 data Add = Add { a :: Int, b :: Int }
   deriving (Eq, Show, Generic)
@@ -108,8 +115,15 @@ testResponse req
           Right (Add x y) -> okResponse (x + y)
           Left err        -> failureResponse err
 
-      "/math/random" ->
-        effectfulResponse @Int $ Random.randomRIO (1, 100)
-
       _ ->
         failureResponse "Invalid path"
+
+testEffectResponse :: Request -> IO Response
+testEffectResponse req
+  = case requestPath req of
+      "/math/random" -> do
+        n <- Random.randomRIO @Int (1, 100)
+        pure (okResponse n)
+
+      _ ->
+        pure (testResponse req)
