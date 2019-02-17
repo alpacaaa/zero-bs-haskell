@@ -5,6 +5,7 @@
 module Lib where
 
 import Control.Arrow (left)
+import Control.Monad (forM_)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -16,6 +17,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.Wai as Wai
+import qualified Network.HTTP.Types as HTTP.Types
 import qualified System.Random as Random
 import qualified Web.Scotty as Scotty
 
@@ -27,7 +29,6 @@ someFunc = putStrLn "someFunc"
 data Method
   = MethodGET
   | MethodPOST
-  | MethodOTHER
   deriving (Eq, Show)
 
 data Request
@@ -50,7 +51,7 @@ createRequest = do
         = case Wai.requestMethod req of
             "GET"  -> MethodGET
             "POST" -> MethodPOST
-            _      -> MethodOTHER
+            _      -> MethodGET
 
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
 
@@ -242,5 +243,20 @@ statefulHandler method path initialState toResponse
 
 
 serverV2 :: Int -> Server -> IO ()
-serverV2 -- port handlers
-  = undefined
+serverV2 port serverDef = do
+  handlers <- traverse makeRoute serverDef
+  Scotty.scotty port $ do
+    forM_ handlers $ \(method, route, routeHandler) ->
+      Scotty.addroute method route routeHandler
+  where
+    makeRoute h = do
+      let route
+            = Scotty.capture (handlerPath h)
+          method
+            = case handlerMethod h of
+                MethodGET  -> HTTP.Types.GET
+                MethodPOST -> HTTP.Types.POST
+
+      routeHandler <- handlerFn h
+      Debug.traceShowM (method, handlerPath h)
+      pure (method, route, routeHandler)

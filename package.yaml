@@ -28,6 +28,7 @@ dependencies:
 - base
 - bytestring
 - containers
+- http-types
 - random
 - scotty
 - stm
