@@ -16,7 +16,6 @@ import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
-import qualified Network.Wai as Wai
 import qualified Network.HTTP.Types as HTTP.Types
 import qualified System.Random as Random
 import qualified Web.Scotty as Scotty
@@ -33,9 +32,7 @@ data Method
 
 data Request
   = Request
-      { requestPath   :: Text
-      , requestMethod :: Method
-      , requestBody   :: Text
+      { requestBody   :: Text
       }
   deriving (Eq, Show)
 
@@ -45,52 +42,10 @@ data Response where
 
 createRequest :: Scotty.ActionM Request
 createRequest = do
-  req <- Scotty.request
-
-  let method'
-        = case Wai.requestMethod req of
-            "GET"  -> MethodGET
-            "POST" -> MethodPOST
-            _      -> MethodGET
-
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
-
   pure Request
-    { requestPath   = "/" <> Text.intercalate "/" (Wai.pathInfo req)
-    , requestMethod = method'
-    , requestBody   = body
+    { requestBody = body
     }
-
-simpleServer :: Int -> (Request -> Response) -> IO ()
-simpleServer port toResponse
-  = Scotty.scotty port $ do
-      Scotty.notFound $ do
-        req <- createRequest
-        Debug.traceShowM req
-
-        handleResponse (toResponse req)
-
-simpleServerWithState
-  :: Int
-  -> (state -> Request -> (state, Response))
-  -> state
-  -> IO ()
-simpleServerWithState port toResponse initialState = do
-  stateVar <- TVar.newTVarIO initialState
-
-  Scotty.scotty port $ do
-    Scotty.notFound $ do
-      req <- createRequest
-      Debug.traceShowM req
-
-      res <- Scotty.liftAndCatchIO $
-        STM.atomically $ do
-          state <- TVar.readTVar stateVar
-          let (newState, res) = toResponse state req
-          TVar.writeTVar stateVar newState
-          pure res
-
-      handleResponse res
 
 handleResponse :: Response -> Scotty.ActionM ()
 handleResponse res
@@ -99,16 +54,6 @@ handleResponse res
         Scotty.json body
       FailureResponse err ->
         Scotty.raise $ Text.Lazy.fromStrict err
-
-effectfulServer :: Int -> (Request -> IO Response) -> IO ()
-effectfulServer port toResponse
-  = Scotty.scotty port $ do
-      Scotty.notFound $ do
-        req <- createRequest
-        Debug.traceShowM req
-
-        res <- Scotty.liftAndCatchIO $ toResponse req
-        handleResponse res
 
 decodeJson :: Aeson.FromJSON a => Text -> Either Text a
 decodeJson input
@@ -131,37 +76,23 @@ instance Aeson.FromJSON Add
 
 testResponse :: Request -> Response
 testResponse req
-  = case requestPath req of
-      "/math/add" ->
-        let
-          parsed = decodeJson @Add (requestBody req)
-        in
-        case parsed of
-          Right (Add x y) -> okResponse (x + y)
-          Left err        -> failureResponse err
-
-      _ ->
-        failureResponse "Invalid path"
+  = let
+      parsed = decodeJson @Add (requestBody req)
+    in
+    case parsed of
+      Right (Add x y) -> okResponse (x + y)
+      Left err        -> failureResponse err
 
 testEffectResponse :: Request -> IO Response
-testEffectResponse req
-  = case requestPath req of
-      "/math/random" -> do
-        n <- Random.randomRIO @Int (1, 100)
-        pure (okResponse n)
-
-      _ ->
-        pure (testResponse req)
+testEffectResponse _ = do
+  n <- Random.randomRIO @Int (1, 100)
+  pure (okResponse n)
 
 testStateResponse :: Int -> Request -> (Int, Response)
-testStateResponse state req
-  = case requestPath req of
-      "/counter" ->
-        let newState = state + 1
-        in (newState, okResponse newState)
+testStateResponse state _
+  = let newState = state + 1
+    in (newState, okResponse newState)
 
-      _ ->
-        (state, testResponse req)
 
 data GuessState
   = GuessState
@@ -180,18 +111,12 @@ guessInitialState = GuessState "" "merda"
 
 testStateGuess :: GuessState -> Request -> (GuessState, Response)
 testStateGuess state req
-  = case requestPath req of
-      "/guess" ->
-        let
-          parsed = decodeJson @Guess (requestBody req)
-        in
-        case parsed of
-          Right (Guess c) -> updateState c
-          Left err        -> (state, failureResponse err)
-
-      _ ->
-        (state, testResponse req)
-
+  = let
+      parsed = decodeJson @Guess (requestBody req)
+    in
+    case parsed of
+      Right (Guess c) -> updateState c
+      Left err        -> (state, failureResponse err)
   where
     updateState c
       = (state { guess = guess state <> [c] }, okResponse @Int 1)
@@ -241,7 +166,6 @@ statefulHandler method path initialState toResponse
       stateVar <- TVar.newTVarIO initialState
       pure (f stateVar)
 
-
 serverV2 :: Int -> Server -> IO ()
 serverV2 port serverDef = do
   handlers <- traverse makeRoute serverDef
@@ -260,3 +184,11 @@ serverV2 port serverDef = do
       routeHandler <- handlerFn h
       Debug.traceShowM (method, handlerPath h)
       pure (method, route, routeHandler)
+
+testMain :: IO ()
+testMain
+  = serverV2 3000
+  $ [ simpleHandler    MethodPOST "/math/add" testResponse
+    , effectfulHandler MethodPOST "/math/random" testEffectResponse
+    , statefulHandler  MethodPOST "/counter" 0 testStateResponse
+    ]
