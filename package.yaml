@@ -30,6 +30,7 @@ dependencies:
 - containers
 - random
 - scotty
+- stm
 - text
 - wai
 

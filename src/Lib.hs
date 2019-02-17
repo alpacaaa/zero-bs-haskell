@@ -8,6 +8,8 @@ import Control.Arrow (left)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
+import qualified Control.Concurrent.STM as STM
+import qualified Control.Concurrent.STM.TVar as TVar
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.Text as Text
@@ -66,6 +68,28 @@ simpleServer port toResponse
         Debug.traceShowM req
 
         handleResponse (toResponse req)
+
+simpleServerWithState
+  :: Int
+  -> (state -> Request -> (state, Response))
+  -> state
+  -> IO ()
+simpleServerWithState port toResponse initialState = do
+  stateVar <- TVar.newTVarIO initialState
+
+  Scotty.scotty port $ do
+    Scotty.notFound $ do
+      req <- createRequest
+      Debug.traceShowM req
+
+      res <- Scotty.liftAndCatchIO $
+        STM.atomically $ do
+          state <- TVar.readTVar stateVar
+          let (newState, res) = toResponse state req
+          TVar.writeTVar stateVar newState
+          pure res
+
+      handleResponse res
 
 handleResponse :: Response -> Scotty.ActionM ()
 handleResponse res
@@ -127,3 +151,13 @@ testEffectResponse req
 
       _ ->
         pure (testResponse req)
+
+testStateResponse :: Int -> Request -> (Int, Response)
+testStateResponse state req
+  = case requestPath req of
+      "/counter" ->
+        let newState = state + 1
+        in (newState, okResponse newState)
+
+      _ ->
+        (state, testResponse req)
