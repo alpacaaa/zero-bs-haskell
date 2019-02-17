@@ -161,3 +161,36 @@ testStateResponse state req
 
       _ ->
         (state, testResponse req)
+
+data GuessState
+  = GuessState
+      { guess  :: String
+      , actual :: String
+      }
+
+data Guess
+  = Guess { letter :: Char }
+  deriving (Eq, Show, Generic)
+
+instance Aeson.FromJSON Guess
+
+guessInitialState :: GuessState
+guessInitialState = GuessState "" "merda"
+
+testStateGuess :: GuessState -> Request -> (GuessState, Response)
+testStateGuess state req
+  = case requestPath req of
+      "/guess" ->
+        let
+          parsed = decodeJson @Guess (requestBody req)
+        in
+        case parsed of
+          Right (Guess c) -> updateState c
+          Left err        -> (state, failureResponse err)
+
+      _ ->
+        (state, testResponse req)
+
+  where
+    updateState c
+      = (state { guess = guess state <> [c] }, okResponse @Int 1)
