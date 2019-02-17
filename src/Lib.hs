@@ -194,3 +194,53 @@ testStateGuess state req
   where
     updateState c
       = (state { guess = guess state <> [c] }, okResponse @Int 1)
+
+
+type Server
+  = [ Handler ]
+
+data Handler
+  = Handler
+      { handlerMethod :: Method
+      , handlerPath   :: String
+      , handlerFn     :: IO (Scotty.ActionM ())
+      }
+
+simpleHandler :: Method -> String -> (Request -> Response) -> Handler
+simpleHandler method path toResponse
+  = Handler method path $ pure $ do
+      req <- createRequest
+      Debug.traceShowM req
+      handleResponse (toResponse req)
+
+effectfulHandler :: Method -> String -> (Request -> IO Response) -> Handler
+effectfulHandler method path toResponse
+  = Handler method path $ pure $ do
+      req <- createRequest
+      Debug.traceShowM req
+      res <- Scotty.liftAndCatchIO $ toResponse req
+      handleResponse res
+
+statefulHandler :: Method -> String -> state -> (state -> Request -> (state, Response)) -> Handler
+statefulHandler method path initialState toResponse
+  = Handler method path $ initTVar $ \stateVar -> do
+      req <- createRequest
+      Debug.traceShowM req
+
+      res <- Scotty.liftAndCatchIO $
+        STM.atomically $ do
+          state <- TVar.readTVar stateVar
+          let (newState, res) = toResponse state req
+          TVar.writeTVar stateVar newState
+          pure res
+
+      handleResponse res
+  where
+    initTVar f = do
+      stateVar <- TVar.newTVarIO initialState
+      pure (f stateVar)
+
+
+serverV2 :: Int -> Server -> IO ()
+serverV2 -- port handlers
+  = undefined
