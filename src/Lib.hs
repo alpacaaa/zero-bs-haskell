@@ -17,6 +17,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.HTTP.Types as HTTP.Types
+import qualified Network.Wai.Middleware.Cors as Cors
 import qualified System.Random as Random
 import qualified Web.Scotty as Scotty
 
@@ -170,6 +171,7 @@ serverV2 :: Int -> Server -> IO ()
 serverV2 port serverDef = do
   handlers <- traverse makeRoute serverDef
   Scotty.scotty port $ do
+    Scotty.middleware corsMiddleware
     forM_ handlers $ \(method, route, routeHandler) ->
       Scotty.addroute method route routeHandler
   where
@@ -185,10 +187,18 @@ serverV2 port serverDef = do
       Debug.traceShowM (method, handlerPath h)
       pure (method, route, routeHandler)
 
+    corsMiddleware
+      = Cors.cors
+          ( const $ Just
+            (Cors.simpleCorsResourcePolicy
+              { Cors.corsRequestHeaders = ["Content-Type"] })
+          )
+
 testMain :: IO ()
 testMain
   = serverV2 3000
   $ [ simpleHandler    MethodPOST "/math/add" testResponse
+    , simpleHandler    MethodGET "/book" $ \_ -> okResponse @[Int] []
     , effectfulHandler MethodPOST "/math/random" testEffectResponse
     , statefulHandler  MethodPOST "/counter" 0 testStateResponse
     ]
