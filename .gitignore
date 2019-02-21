@@ -1,3 +1,4 @@
 .stack-work/
 request-response.cabal
 *~
+.DS_Store
