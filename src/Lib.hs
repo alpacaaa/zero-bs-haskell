@@ -1,30 +1,23 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
 module Lib where
 
 import Control.Arrow (left)
-import Control.Monad (forM_)
+import Control.Monad (forM, forM_)
 import Data.Text (Text)
-import GHC.Generics (Generic)
 
 import qualified Control.Concurrent.STM as STM
 import qualified Control.Concurrent.STM.TVar as TVar
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.Text as Text
-import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.HTTP.Types as HTTP.Types
 import qualified Network.Wai.Middleware.Cors as Cors
-import qualified System.Random as Random
 import qualified Web.Scotty as Scotty
 
-import qualified Debug.Trace as Debug
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+-- import qualified Debug.Trace as Debug
 
 data Method
   = MethodGET
@@ -33,13 +26,19 @@ data Method
 
 data Request
   = Request
-      { requestBody   :: Text
+      { requestBody :: Text
       }
   deriving (Eq, Show)
 
-data Response where
-  OkResponse      :: Aeson.ToJSON a => a -> Response
-  FailureResponse :: Text -> Response
+data ResponseType
+  = OkResponse
+  | FailureResponse
+
+data Response
+  = Response
+      { responseType :: ResponseType
+      , responseBody :: ByteString.Lazy.ByteString
+      }
 
 createRequest :: Scotty.ActionM Request
 createRequest = do
@@ -48,144 +47,115 @@ createRequest = do
     { requestBody = body
     }
 
-handleResponse :: Response -> Scotty.ActionM ()
-handleResponse res
-  = case res of
-      OkResponse body ->
-        Scotty.json body
-      FailureResponse err ->
-        Scotty.raise $ Text.Lazy.fromStrict err
+handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
+handleResponse path req res = do
+  Scotty.setHeader "Content-Type" "application/json; charset=utf-8"
+  logInfo $ Text.pack path <> " " <> requestBody req
+
+  case responseType res of
+    OkResponse -> Scotty.status HTTP.Types.status200
+    FailureResponse -> Scotty.status HTTP.Types.status400
+
+  Scotty.raw (responseBody res)
 
 decodeJson :: Aeson.FromJSON a => Text -> Either Text a
 decodeJson input
   = left Text.pack $ Aeson.eitherDecode' (toLazy input)
-  where
-    toLazy = ByteString.Lazy.fromStrict . Text.Encoding.encodeUtf8
+
+toLazy :: Text -> ByteString.Lazy.ByteString
+toLazy
+  = ByteString.Lazy.fromStrict . Text.Encoding.encodeUtf8
+
+logInfo :: Text -> Scotty.ActionM ()
+logInfo
+  = Scotty.liftAndCatchIO . putStrLn . Text.unpack
 
 okResponse :: Aeson.ToJSON a => a -> Response
 okResponse body
-  = OkResponse body
+  = Response OkResponse (Aeson.encode body)
 
 failureResponse :: Text -> Response
 failureResponse err
-  = FailureResponse err
-
-data Add = Add { a :: Int, b :: Int }
-  deriving (Eq, Show, Generic)
-
-instance Aeson.FromJSON Add
-
-testResponse :: Request -> Response
-testResponse req
-  = let
-      parsed = decodeJson @Add (requestBody req)
-    in
-    case parsed of
-      Right (Add x y) -> okResponse (x + y)
-      Left err        -> failureResponse err
-
-testEffectResponse :: Request -> IO Response
-testEffectResponse _ = do
-  n <- Random.randomRIO @Int (1, 100)
-  pure (okResponse n)
-
-testStateResponse :: Int -> Request -> (Int, Response)
-testStateResponse state _
-  = let newState = state + 1
-    in (newState, okResponse newState)
-
-
-data GuessState
-  = GuessState
-      { guess  :: String
-      , actual :: String
-      }
-
-data Guess
-  = Guess { letter :: Char }
-  deriving (Eq, Show, Generic)
-
-instance Aeson.FromJSON Guess
-
-guessInitialState :: GuessState
-guessInitialState = GuessState "" "merda"
-
-testStateGuess :: GuessState -> Request -> (GuessState, Response)
-testStateGuess state req
-  = let
-      parsed = decodeJson @Guess (requestBody req)
-    in
-    case parsed of
-      Right (Guess c) -> updateState c
-      Left err        -> (state, failureResponse err)
-  where
-    updateState c
-      = (state { guess = guess state <> [c] }, okResponse @Int 1)
-
-
-type Server
-  = [ Handler ]
+  = Response FailureResponse (toLazy err)
 
 data Handler
-  = Handler
+  = SimpleHandler    StatelessHandler
+  | EffectfulHandler (IO [StatelessHandler])
+
+data StatelessHandler
+  = StatelessHandler
       { handlerMethod :: Method
       , handlerPath   :: String
-      , handlerFn     :: IO (Scotty.ActionM ())
+      , handlerFn     :: Scotty.ActionM ()
       }
+
+data StatefulHandlerFn state
+  = StatefulHandlerFn
+      Method
+      String
+      (state -> Request -> (state, Response))
 
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
-  = Handler method path $ pure $ do
+  = SimpleHandler
+  $ StatelessHandler method path $ do
       req <- createRequest
-      Debug.traceShowM req
-      handleResponse (toResponse req)
+      handleResponse path req (toResponse req)
 
 effectfulHandler :: Method -> String -> (Request -> IO Response) -> Handler
 effectfulHandler method path toResponse
-  = Handler method path $ pure $ do
+  = SimpleHandler
+  $ StatelessHandler method path $ do
       req <- createRequest
-      Debug.traceShowM req
       res <- Scotty.liftAndCatchIO $ toResponse req
-      handleResponse res
+      handleResponse path req res
 
-statefulHandler :: Method -> String -> state -> (state -> Request -> (state, Response)) -> Handler
-statefulHandler method path initialState toResponse
-  = Handler method path $ initTVar $ \stateVar -> do
-      req <- createRequest
-      Debug.traceShowM req
-
-      res <- Scotty.liftAndCatchIO $
-        STM.atomically $ do
-          state <- TVar.readTVar stateVar
-          let (newState, res) = toResponse state req
-          TVar.writeTVar stateVar newState
-          pure res
-
-      handleResponse res
-  where
-    initTVar f = do
+statefulHandler
+  :: state
+  -> [StatefulHandlerFn state]
+  -> Handler
+statefulHandler initialState handlers
+  = EffectfulHandler $ do
       stateVar <- TVar.newTVarIO initialState
-      pure (f stateVar)
+      forM handlers $ \(StatefulHandlerFn method path toResponse) ->
+        pure $ StatelessHandler method path $ do
+            req <- createRequest
 
-serverV2 :: Int -> Server -> IO ()
+            res <- Scotty.liftAndCatchIO $
+              STM.atomically $ do
+                state <- TVar.readTVar stateVar
+                let (newState, res) = toResponse state req
+                TVar.writeTVar stateVar newState
+                pure res
+
+            handleResponse path req res
+
+serverV2 :: Int -> [Handler] -> IO ()
 serverV2 port serverDef = do
-  handlers <- traverse makeRoute serverDef
+  handlers <- concat <$> traverse processHandler serverDef
+  -- TODO show handlers
+
   Scotty.scotty port $ do
     Scotty.middleware corsMiddleware
-    forM_ handlers $ \(method, route, routeHandler) ->
-      Scotty.addroute method route routeHandler
-  where
-    makeRoute h = do
-      let route
-            = Scotty.capture (handlerPath h)
-          method
-            = case handlerMethod h of
-                MethodGET  -> HTTP.Types.GET
-                MethodPOST -> HTTP.Types.POST
 
-      routeHandler <- handlerFn h
-      Debug.traceShowM (method, handlerPath h)
-      pure (method, route, routeHandler)
+    forM_ handlers $ \h -> do
+      let (method, route, routeHandler) = makeRoute h
+      Scotty.addroute method route routeHandler
+
+  where
+    processHandler = \case
+      SimpleHandler h -> pure [h]
+      EffectfulHandler makeHandlers -> makeHandlers
+
+    makeRoute h
+      = (method, route, handlerFn h)
+      where
+        route
+          = Scotty.capture (handlerPath h)
+        method
+          = case handlerMethod h of
+              MethodGET  -> HTTP.Types.GET
+              MethodPOST -> HTTP.Types.POST
 
     corsMiddleware
       = Cors.cors
@@ -193,12 +163,3 @@ serverV2 port serverDef = do
             (Cors.simpleCorsResourcePolicy
               { Cors.corsRequestHeaders = ["Content-Type"] })
           )
-
-testMain :: IO ()
-testMain
-  = serverV2 3000
-  $ [ simpleHandler    MethodPOST "/math/add" testResponse
-    , simpleHandler    MethodGET "/book" $ \_ -> okResponse @[Int] []
-    , effectfulHandler MethodPOST "/math/random" testEffectResponse
-    , statefulHandler  MethodPOST "/counter" 0 testStateResponse
-    ]
