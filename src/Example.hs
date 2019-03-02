@@ -64,12 +64,15 @@ testStateGuess state req
 
 testMain :: IO ()
 testMain
-  = serverV2 3000
+  = startServer 3000
   $ [ simpleHandler    MethodPOST "/math/add" testResponse
     , simpleHandler    MethodGET "/book" $ \_ -> okResponse @[Int] []
     , effectfulHandler MethodPOST "/math/random" testEffectResponse
     , statefulHandler  0
         [ StatefulHandlerFn MethodPOST "/counter" testStateResponse
         , StatefulHandlerFn MethodGET  "/counter" $ \state _ -> (state, okResponse state)
+        ]
+    , statefulHandler guessInitialState
+        [ StatefulHandlerFn MethodPOST "/guess" testStateGuess
         ]
     ]

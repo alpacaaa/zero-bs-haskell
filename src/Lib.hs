@@ -1,7 +1,19 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lib where
+module Lib
+  ( Method (..)
+  , Request (..)
+  , Response
+  , StatefulHandlerFn (..)
+  , okResponse
+  , failureResponse
+  , decodeJson
+  , simpleHandler
+  , effectfulHandler
+  , statefulHandler
+  , startServer
+  ) where
 
 import Control.Arrow (left)
 import Control.Monad (forM, forM_)
@@ -89,6 +101,7 @@ data StatelessHandler
       , handlerFn     :: Scotty.ActionM ()
       }
 
+-- Refactor to helper function (?)
 data StatefulHandlerFn state
   = StatefulHandlerFn
       Method
@@ -130,8 +143,8 @@ statefulHandler initialState handlers
 
             handleResponse path req res
 
-serverV2 :: Int -> [Handler] -> IO ()
-serverV2 port serverDef = do
+startServer :: Int -> [Handler] -> IO ()
+startServer port serverDef = do
   handlers <- concat <$> traverse processHandler serverDef
   -- TODO show handlers
 
