@@ -18,6 +18,7 @@ module Lib
 
 import Control.Arrow (left)
 import Control.Monad (forM, forM_)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 
 import qualified Control.Concurrent.STM as STM
@@ -35,7 +36,11 @@ import qualified Web.Scotty as Scotty
 data Method
   = MethodGET
   | MethodPOST
-  deriving (Eq, Show)
+  deriving (Eq)
+
+instance Show Method where
+  show MethodGET  = "GET"
+  show MethodPOST = "POST"
 
 data Request
   = Request
@@ -79,9 +84,9 @@ toLazy :: Text -> ByteString.Lazy.ByteString
 toLazy
   = ByteString.Lazy.fromStrict . Text.Encoding.encodeUtf8
 
-logInfo :: Text -> Scotty.ActionM ()
+logInfo :: MonadIO m => Text -> m ()
 logInfo
-  = Scotty.liftAndCatchIO . putStrLn . Text.unpack
+  = liftIO . putStrLn . Text.unpack
 
 okResponse :: Aeson.ToJSON a => a -> Response
 okResponse body
@@ -146,8 +151,15 @@ statefulHandler initialState handlers
 
 startServerOnPort :: Int -> [Handler] -> IO ()
 startServerOnPort port serverDef = do
+  logInfo ""
+  logInfo "Zero Haskell Bullshit server"
+  logInfo "Ready to smash"
+  logInfo ""
+
   handlers <- concat <$> traverse processHandler serverDef
-  -- TODO show handlers
+  forM_ handlers logHandler
+
+  logInfo ""
 
   Scotty.scotty port $ do
     Scotty.middleware corsMiddleware
@@ -177,6 +189,15 @@ startServerOnPort port serverDef = do
             (Cors.simpleCorsResourcePolicy
               { Cors.corsRequestHeaders = ["Content-Type"] })
           )
+
+    logHandler h
+      = logInfo
+      $ padMethod h <> " " <> Text.pack (handlerPath h)
+
+    padMethod h
+      = Text.justifyLeft 5 ' '
+      $ Text.pack
+      $ show (handlerMethod h)
 
 startServer :: [Handler] -> IO ()
 startServer
