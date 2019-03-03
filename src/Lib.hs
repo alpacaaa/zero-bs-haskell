@@ -152,7 +152,7 @@ statefulHandler initialState handlers
 startServerOnPort :: Int -> [Handler] -> IO ()
 startServerOnPort port serverDef = do
   logInfo ""
-  logInfo "Zero Haskell Bullshit server"
+  logInfo "Zero Bullshit Haskell server"
   logInfo "Ready to smash"
   logInfo ""
 
