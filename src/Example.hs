@@ -64,7 +64,7 @@ testStateGuess state req
 
 testMain :: IO ()
 testMain
-  = startServer 3000
+  = startServerOnPort 3000
   $ [ simpleHandler    MethodPOST "/math/add" testResponse
     , simpleHandler    MethodGET "/book" $ \_ -> okResponse @[Int] []
     , effectfulHandler MethodPOST "/math/random" testEffectResponse

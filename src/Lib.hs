@@ -13,6 +13,7 @@ module Lib
   , effectfulHandler
   , statefulHandler
   , startServer
+  , startServerOnPort
   ) where
 
 import Control.Arrow (left)
@@ -143,8 +144,8 @@ statefulHandler initialState handlers
 
             handleResponse path req res
 
-startServer :: Int -> [Handler] -> IO ()
-startServer port serverDef = do
+startServerOnPort :: Int -> [Handler] -> IO ()
+startServerOnPort port serverDef = do
   handlers <- concat <$> traverse processHandler serverDef
   -- TODO show handlers
 
@@ -176,3 +177,7 @@ startServer port serverDef = do
             (Cors.simpleCorsResourcePolicy
               { Cors.corsRequestHeaders = ["Content-Type"] })
           )
+
+startServer :: [Handler] -> IO ()
+startServer
+  = startServerOnPort 7879
