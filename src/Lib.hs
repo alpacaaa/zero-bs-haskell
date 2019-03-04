@@ -8,6 +8,7 @@ module Lib
   , Handler
   , StatefulHandlerFn (..)
   , okResponse
+  , stringResponse
   , failureResponse
   , decodeJson
   , simpleHandler
@@ -45,7 +46,7 @@ instance Show Method where
 
 data Request
   = Request
-      { requestBody :: Text
+      { requestBody :: String
       }
   deriving (Eq, Show)
 
@@ -63,13 +64,13 @@ createRequest :: Scotty.ActionM Request
 createRequest = do
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
   pure Request
-    { requestBody = body
+    { requestBody = Text.unpack body
     }
 
 handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
 handleResponse path req res = do
   Scotty.setHeader "Content-Type" "application/json; charset=utf-8"
-  logInfo $ Text.pack path <> " " <> requestBody req
+  logInfo $ path <> " " <> requestBody req
 
   case responseType res of
     OkResponse -> Scotty.status HTTP.Types.status200
@@ -77,21 +78,25 @@ handleResponse path req res = do
 
   Scotty.raw (responseBody res)
 
-decodeJson :: Aeson.FromJSON a => Text -> Either Text a
+decodeJson :: Aeson.FromJSON a => String -> Either Text a
 decodeJson input
-  = left Text.pack $ Aeson.eitherDecode' (toLazy input)
+  = left Text.pack $ Aeson.eitherDecode' (toLazy $ Text.pack input)
 
 toLazy :: Text -> ByteString.Lazy.ByteString
 toLazy
   = ByteString.Lazy.fromStrict . Text.Encoding.encodeUtf8
 
-logInfo :: MonadIO m => Text -> m ()
+logInfo :: MonadIO m => String -> m ()
 logInfo
-  = liftIO . putStrLn . Text.unpack
+  = liftIO . putStrLn
 
 okResponse :: Aeson.ToJSON a => a -> Response
 okResponse body
   = Response OkResponse (Aeson.encode body)
+
+stringResponse :: String -> Response
+stringResponse str
+  = Response OkResponse $ toLazy (Text.pack str)
 
 failureResponse :: Text -> Response
 failureResponse err
@@ -193,10 +198,11 @@ startServerOnPort port serverDef = do
 
     logHandler h
       = logInfo
-      $ padMethod h <> " " <> Text.pack (handlerPath h)
+      $ padMethod h <> " " <> handlerPath h
 
     padMethod h
-      = Text.justifyLeft 5 ' '
+      = Text.unpack
+      $ Text.justifyLeft 5 ' '
       $ Text.pack
       $ show (handlerMethod h)
 

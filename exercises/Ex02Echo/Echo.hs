@@ -7,7 +7,7 @@ import qualified Lib
 
 echoHandler :: Lib.Request -> Lib.Response
 echoHandler req
-  = Lib.okResponse (Lib.requestBody req)
+  = Lib.stringResponse (Lib.requestBody req)
 
 main :: IO ()
 main

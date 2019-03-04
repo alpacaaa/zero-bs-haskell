@@ -5,7 +5,7 @@ import qualified Lib
 
 helloHandler :: Lib.Request -> Lib.Response
 helloHandler _
-  = Lib.okResponse "hello"
+  = Lib.stringResponse "hello"
 
 main :: IO ()
 main

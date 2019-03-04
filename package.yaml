@@ -40,23 +40,15 @@ library:
   source-dirs: src
 
 executables:
-  request-response-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - request-response
-
   exercises:
-    main:                Exercises.hs
+    main:                Main.hs
     source-dirs:         exercises
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    default-extensions:
+    - OverloadedStrings
     dependencies:
     - request-response
 
