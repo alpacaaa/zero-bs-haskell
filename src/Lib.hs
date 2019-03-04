@@ -5,6 +5,7 @@ module Lib
   ( Method (..)
   , Request (..)
   , Response
+  , Handler
   , StatefulHandlerFn (..)
   , okResponse
   , failureResponse
