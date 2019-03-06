@@ -52,6 +52,7 @@ data Request
 
 data ResponseType
   = OkResponse
+  | StringResponse
   | FailureResponse
 
 data Response
@@ -69,14 +70,18 @@ createRequest = do
 
 handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
 handleResponse path req res = do
-  Scotty.setHeader "Content-Type" "application/json; charset=utf-8"
   logInfo $ path <> " " <> requestBody req
 
   case responseType res of
-    OkResponse -> Scotty.status HTTP.Types.status200
-    FailureResponse -> Scotty.status HTTP.Types.status400
+    OkResponse -> json
+    StringResponse -> Scotty.status HTTP.Types.status200
+    FailureResponse -> json *> Scotty.status HTTP.Types.status400
 
   Scotty.raw (responseBody res)
+
+  where
+    json
+      = Scotty.setHeader "Content-Type" "application/json; charset=utf-8"
 
 decodeJson :: Aeson.FromJSON a => String -> Either Text a
 decodeJson input
@@ -96,7 +101,7 @@ okResponse body
 
 stringResponse :: String -> Response
 stringResponse str
-  = Response OkResponse $ toLazy (Text.pack str)
+  = Response StringResponse $ toLazy (Text.pack str)
 
 failureResponse :: Text -> Response
 failureResponse err

@@ -13,7 +13,6 @@ const host = 'http://localhost:7879'
 const get = (path) => {
   return chai.request(host)
     .get(path)
-    .set('Content-type', 'application/json')
 }
 
 const post = (path, body) => {

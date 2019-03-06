@@ -4,9 +4,12 @@ set -eo
 
 cd exercises
 
-run () {
+run-with () {
+  # $1: ex number
+  # $2: program (ie. node index.js)
+
   echo "Running exercise $1"
-  node index.js $1 &
+  $2 $1 &
   PID=$!
 
   EXERCISE=$1 npx mocha test-runner.js || {
@@ -18,6 +21,23 @@ run () {
   kill -9 $PID
 }
 
+run-node () {
+  echo "Running with node"
+  run-with $1 "node index.js"
+}
+
+run-hs () {
+  echo "Running with Haskell"
+  run-with $1 "stack exec exercises --"
+}
+
+run () {
+  run-node $1
+  run-hs $1
+}
+
+
+stack build --fast
 
 run 1
 run 2
