@@ -8,4 +8,5 @@ app.post("/echo", (req, res) => {
   res.send(req.body.toString())
 })
 
+console.log("Starting server...")
 app.listen(7879)

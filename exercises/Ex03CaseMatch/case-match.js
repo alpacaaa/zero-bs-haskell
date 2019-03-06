@@ -24,4 +24,5 @@ app.post("/case", (req, res) => {
   res.send(result)
 })
 
+console.log("Starting server...")
 app.listen(7879)
