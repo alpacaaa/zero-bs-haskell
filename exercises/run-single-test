@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -eo
+
+cd exercises
+
+run () {
+  echo "Running exercise $1"
+  node index.js $1 &
+  PID=$!
+
+  EXERCISE=$1 npx mocha test-runner.js || {
+    echo "Test failed"
+    kill -9 $PID
+    exit 1
+  }
+
+  kill -9 $PID
+}
+
+run 1
