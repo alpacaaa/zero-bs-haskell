@@ -5,5 +5,5 @@ app.get("/hello", (req, res) => {
   res.send("hello")
 })
 
-console.log("Starting server...")
+console.log("[ex1] Starting server...")
 app.listen(7879)

@@ -1,3 +1,3 @@
 
 run-tests:
-	./exercises/run-single-test node 1
+	./exercises/run-tests
