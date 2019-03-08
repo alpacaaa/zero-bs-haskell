@@ -1,14 +1,14 @@
 module Ex03CaseMatch.CaseMatch where
 
-import qualified Lib
+import qualified Zero.Server as Server
 
 
-caseHandler :: Lib.Request -> Lib.Response
+caseHandler :: Server.Request -> Server.Response
 caseHandler req
-  = Lib.stringResponse res
+  = Server.stringResponse res
   where
     res
-      = case Lib.requestBody req of
+      = case Server.requestBody req of
           "1" -> "one"
           "2" -> "two"
           "3" -> "three"
@@ -16,6 +16,6 @@ caseHandler req
 
 main :: IO ()
 main
-  = Lib.startServer
-      [ Lib.simpleHandler Lib.MethodPOST "/case" caseHandler
+  = Server.startServer
+      [ Server.simpleHandler Server.POST "/case" caseHandler
       ]

@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 module Example where
 
-import Lib
+import Zero.Server
 
 import GHC.Generics (Generic)
 
@@ -65,14 +65,14 @@ testStateGuess state req
 testMain :: IO ()
 testMain
   = startServerOnPort 3000
-  $ [ simpleHandler    MethodPOST "/math/add" testResponse
-    , simpleHandler    MethodGET "/book" $ \_ -> okResponse @[Int] []
-    , effectfulHandler MethodPOST "/math/random" testEffectResponse
+  $ [ simpleHandler    POST "/math/add" testResponse
+    , simpleHandler    GET "/book" $ \_ -> okResponse @[Int] []
+    , effectfulHandler POST "/math/random" testEffectResponse
     , statefulHandler  0
-        [ StatefulHandlerFn MethodPOST "/counter" testStateResponse
-        , StatefulHandlerFn MethodGET  "/counter" $ \state _ -> (state, okResponse state)
+        [ mkStatefulHandler POST "/counter" testStateResponse
+        , mkStatefulHandler GET  "/counter" $ \state _ -> (state, okResponse state)
         ]
     , statefulHandler guessInitialState
-        [ StatefulHandlerFn MethodPOST "/guess" testStateGuess
+        [ mkStatefulHandler POST "/guess" testStateGuess
         ]
     ]

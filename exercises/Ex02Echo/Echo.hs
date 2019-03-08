@@ -1,16 +1,16 @@
 module Ex02Echo.Echo where
 
-import qualified Lib
+import qualified Zero.Server as Server
 
 -- curl http://localhost:7879/echo -H "Content-Type: application/json" --data "[]"
 
 
-echoHandler :: Lib.Request -> Lib.Response
+echoHandler :: Server.Request -> Server.Response
 echoHandler req
-  = Lib.stringResponse (Lib.requestBody req)
+  = Server.stringResponse (Server.requestBody req)
 
 main :: IO ()
 main
-  = Lib.startServer
-      [ Lib.simpleHandler Lib.MethodPOST "/echo" echoHandler
+  = Server.startServer
+      [ Server.simpleHandler Server.POST "/echo" echoHandler
       ]

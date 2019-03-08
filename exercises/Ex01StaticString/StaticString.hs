@@ -1,14 +1,14 @@
 module Ex01StaticString.StaticString where
 
-import qualified Lib
+import qualified Zero.Server as Server
 
 
-helloHandler :: Lib.Request -> Lib.Response
+helloHandler :: Server.Request -> Server.Response
 helloHandler _
-  = Lib.stringResponse "hello"
+  = Server.stringResponse "hello"
 
 main :: IO ()
 main
-  = Lib.startServer
-      [ Lib.simpleHandler Lib.MethodGET "/hello" helloHandler
+  = Server.startServer
+      [ Server.simpleHandler Server.GET "/hello" helloHandler
       ]

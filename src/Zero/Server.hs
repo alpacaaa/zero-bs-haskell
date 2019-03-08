@@ -1,12 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lib
+module Zero.Server
   ( Method (..)
-  , Request (..)
+  , Request
+  , requestBody
   , Response
   , Handler
-  , StatefulHandlerFn (..)
+  , StatefulHandler
   , okResponse
   , stringResponse
   , failureResponse
@@ -14,6 +15,7 @@ module Lib
   , simpleHandler
   , effectfulHandler
   , statefulHandler
+  , mkStatefulHandler
   , startServer
   , startServerOnPort
   ) where
@@ -36,19 +38,20 @@ import qualified Web.Scotty as Scotty
 -- import qualified Debug.Trace as Debug
 
 data Method
-  = MethodGET
-  | MethodPOST
+  = GET
+  | POST
   deriving (Eq)
 
 instance Show Method where
-  show MethodGET  = "GET"
-  show MethodPOST = "POST"
+  show GET  = "GET"
+  show POST = "POST"
 
 data Request
-  = Request
-      { requestBody :: String
-      }
+  = Request String
   deriving (Eq, Show)
+
+requestBody :: Request -> String
+requestBody (Request body) = body
 
 data ResponseType
   = OkResponse
@@ -64,9 +67,7 @@ data Response
 createRequest :: Scotty.ActionM Request
 createRequest = do
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
-  pure Request
-    { requestBody = Text.unpack body
-    }
+  pure $ Request (Text.unpack body)
 
 handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
 handleResponse path req res = do
@@ -74,7 +75,7 @@ handleResponse path req res = do
 
   case responseType res of
     OkResponse -> json
-    StringResponse -> Scotty.status HTTP.Types.status200
+    StringResponse -> pure ()
     FailureResponse -> json *> Scotty.status HTTP.Types.status400
 
   Scotty.raw (responseBody res)
@@ -118,12 +119,19 @@ data StatelessHandler
       , handlerFn     :: Scotty.ActionM ()
       }
 
--- Refactor to helper function (?)
-data StatefulHandlerFn state
-  = StatefulHandlerFn
+data StatefulHandler state
+  = StatefulHandler
       Method
       String
       (state -> Request -> (state, Response))
+
+mkStatefulHandler
+  :: Method
+  -> String
+  -> (state -> Request -> (state, Response))
+  -> StatefulHandler state
+mkStatefulHandler
+  = StatefulHandler
 
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
@@ -142,12 +150,12 @@ effectfulHandler method path toResponse
 
 statefulHandler
   :: state
-  -> [StatefulHandlerFn state]
+  -> [StatefulHandler state]
   -> Handler
 statefulHandler initialState handlers
   = EffectfulHandler $ do
       stateVar <- TVar.newTVarIO initialState
-      forM handlers $ \(StatefulHandlerFn method path toResponse) ->
+      forM handlers $ \(StatefulHandler method path toResponse) ->
         pure $ StatelessHandler method path $ do
             req <- createRequest
 
@@ -191,8 +199,8 @@ startServerOnPort port serverDef = do
           = Scotty.capture (handlerPath h)
         method
           = case handlerMethod h of
-              MethodGET  -> HTTP.Types.GET
-              MethodPOST -> HTTP.Types.POST
+              GET  -> HTTP.Types.GET
+              POST -> HTTP.Types.POST
 
     corsMiddleware
       = Cors.cors
