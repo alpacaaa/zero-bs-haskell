@@ -68,11 +68,11 @@ testMain
   $ [ simpleHandler    POST "/math/add" testResponse
     , simpleHandler    GET "/book" $ \_ -> jsonResponse @[Int] []
     , effectfulHandler POST "/math/random" testEffectResponse
-    , statefulHandler  0
-        [ mkStatefulHandler POST "/counter" testStateResponse
-        , mkStatefulHandler GET  "/counter" $ \state _ -> (state, jsonResponse state)
+    , handlersWithState  0
+        [ statefulHandler POST "/counter" testStateResponse
+        , statefulHandler GET  "/counter" $ \state _ -> (state, jsonResponse state)
         ]
-    , statefulHandler guessInitialState
-        [ mkStatefulHandler POST "/guess" testStateGuess
+    , handlersWithState guessInitialState
+        [ statefulHandler POST "/guess" testStateGuess
         ]
     ]

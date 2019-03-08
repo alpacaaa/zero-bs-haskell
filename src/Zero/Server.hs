@@ -2,19 +2,28 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Zero.Server
   ( Method (..)
+  , Handler
+
+  -- Request
   , Request
   , requestBody
-  , Response
-  , Handler
-  , StatefulHandler
-  , jsonResponse
-  , stringResponse
-  , failureResponse
   , decodeJson
+
+  -- Response
+  , Response
+  , stringResponse
+  , jsonResponse
+  , failureResponse
+
+  -- Handlers
   , simpleHandler
   , effectfulHandler
+
+  , StatefulHandler
+  , handlersWithState
   , statefulHandler
-  , mkStatefulHandler
+
+  -- Server
   , startServer
   , startServerOnPort
   ) where
@@ -124,12 +133,12 @@ data StatefulHandler state
       String
       (state -> Request -> (state, Response))
 
-mkStatefulHandler
+statefulHandler
   :: Method
   -> String
   -> (state -> Request -> (state, Response))
   -> StatefulHandler state
-mkStatefulHandler
+statefulHandler
   = StatefulHandler
 
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
@@ -147,11 +156,11 @@ effectfulHandler method path toResponse
       res <- Scotty.liftAndCatchIO $ toResponse req
       handleResponse path req res
 
-statefulHandler
+handlersWithState
   :: state
   -> [StatefulHandler state]
   -> Handler
-statefulHandler initialState handlers
+handlersWithState initialState handlers
   = EffectfulHandler $ do
       stateVar <- TVar.newTVarIO initialState
       forM handlers $ \(StatefulHandler method path toResponse) ->
