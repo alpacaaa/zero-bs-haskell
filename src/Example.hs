@@ -20,18 +20,18 @@ testResponse req
       parsed = decodeJson @Add (requestBody req)
     in
     case parsed of
-      Right (Add x y) -> okResponse (x + y)
+      Right (Add x y) -> jsonResponse (x + y)
       Left err        -> failureResponse err
 
 testEffectResponse :: Request -> IO Response
 testEffectResponse _ = do
   n <- Random.randomRIO @Int (1, 100)
-  pure (okResponse n)
+  pure (jsonResponse n)
 
 testStateResponse :: Int -> Request -> (Int, Response)
 testStateResponse state _
   = let newState = state + 1
-    in (newState, okResponse newState)
+    in (newState, jsonResponse newState)
 
 
 data GuessState
@@ -59,18 +59,18 @@ testStateGuess state req
       Left err        -> (state, failureResponse err)
   where
     updateState c
-      = (state { guess = guess state <> [c] }, okResponse @Int 1)
+      = (state { guess = guess state <> [c] }, jsonResponse @Int 1)
 
 
 testMain :: IO ()
 testMain
   = startServerOnPort 3000
   $ [ simpleHandler    POST "/math/add" testResponse
-    , simpleHandler    GET "/book" $ \_ -> okResponse @[Int] []
+    , simpleHandler    GET "/book" $ \_ -> jsonResponse @[Int] []
     , effectfulHandler POST "/math/random" testEffectResponse
     , statefulHandler  0
         [ mkStatefulHandler POST "/counter" testStateResponse
-        , mkStatefulHandler GET  "/counter" $ \state _ -> (state, okResponse state)
+        , mkStatefulHandler GET  "/counter" $ \state _ -> (state, jsonResponse state)
         ]
     , statefulHandler guessInitialState
         [ mkStatefulHandler POST "/guess" testStateGuess

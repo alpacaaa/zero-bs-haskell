@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Zero.Server
@@ -8,7 +7,7 @@ module Zero.Server
   , Response
   , Handler
   , StatefulHandler
-  , okResponse
+  , jsonResponse
   , stringResponse
   , failureResponse
   , decodeJson
@@ -96,8 +95,8 @@ logInfo :: MonadIO m => String -> m ()
 logInfo
   = liftIO . putStrLn
 
-okResponse :: Aeson.ToJSON a => a -> Response
-okResponse body
+jsonResponse :: Aeson.ToJSON a => a -> Response
+jsonResponse body
   = Response OkResponse (Aeson.encode body)
 
 stringResponse :: String -> Response
