@@ -62,8 +62,8 @@ requestBody :: Request -> String
 requestBody (Request body) = body
 
 data ResponseType
-  = OkResponse
-  | StringResponse
+  = StringResponse
+  | JsonResponse
   | FailureResponse
 
 data Response
@@ -82,7 +82,7 @@ handleResponse path req res = do
   logInfo $ path <> " " <> requestBody req
 
   case responseType res of
-    OkResponse -> json
+    JsonResponse -> json
     StringResponse -> pure ()
     FailureResponse -> json *> Scotty.status HTTP.Types.status400
 
@@ -106,7 +106,7 @@ logInfo
 
 jsonResponse :: Aeson.ToJSON a => a -> Response
 jsonResponse body
-  = Response OkResponse (Aeson.encode body)
+  = Response JsonResponse (Aeson.encode body)
 
 stringResponse :: String -> Response
 stringResponse str
