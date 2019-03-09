@@ -48,11 +48,7 @@ import qualified Web.Scotty as Scotty
 data Method
   = GET
   | POST
-  deriving (Eq)
-
-instance Show Method where
-  show GET  = "GET"
-  show POST = "POST"
+  deriving (Eq, Show)
 
 data Request
   = Request String
