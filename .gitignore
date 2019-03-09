@@ -3,3 +3,4 @@ request-response.cabal
 *~
 .DS_Store
 node_modules/
+exercises/bundle.js

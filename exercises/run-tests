@@ -12,7 +12,7 @@ run-with () {
   $2 $1 &
   PID=$!
 
-  EXERCISE=$1 npx mocha test-runner.js || {
+  EXERCISE=$1 npx mocha test-runner-node.js || {
     echo "Test failed"
     kill -9 $PID
     exit 1

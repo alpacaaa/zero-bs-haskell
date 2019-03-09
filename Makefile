@@ -2,6 +2,6 @@
 run-tests:
 	./exercises/run-tests
 
-frontend-bundle:
-	#cd exercises && npx browserify test-runner.js -o bundle.js
+bundle-frontend:
 	./exercises/bundle-frontend
+	cd exercises && python -m SimpleHTTPServer 8800

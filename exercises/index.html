@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Zero Bullshit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <style>
+      .run-btn { padding: 1em; border: 1px solid #ddd; display: inline-block; }
+    </style>
+  </head>
+  <body>
+    <div class="run-btn" onClick="mocha.run()">Run exercises</div>
+    <div id="mocha"></div>
+
+    <script src="https://unpkg.com/chai/chai.js"></script>
+    <script src="https://unpkg.com/mocha/mocha.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chai-http@4.2.1/dist/chai-http.js"></script>
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+    </script>
+    <script src="bundle.js"></script>
+<!--     <script class="mocha-exec">
+      mocha.run();
+    </script> -->
+  </body>
+</html>
