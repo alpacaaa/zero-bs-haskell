@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo
+set -ex
 
 cd exercises
 

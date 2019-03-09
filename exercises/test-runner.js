@@ -1,7 +1,6 @@
 
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const { spawn } = require('child_process')
 
 chai.use(chaiHttp)
 const should = chai.should()
@@ -33,6 +32,5 @@ switch (exercise) {
   case "2": return Ex02(server)
   case "3": return Ex03(server)
   default:
-    console.log(`Invalid exercise ${exercise}`)
-    process.exit(1)
+    throw new Error(`Invalid exercise ${exercise}`)
 }
