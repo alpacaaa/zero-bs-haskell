@@ -12,6 +12,7 @@
     "express": "^4.16.4"
   },
   "devDependencies": {
+    "browserify": "^16.2.3",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "mocha": "^6.0.2"
