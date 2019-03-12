@@ -2,7 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Zero.Server
   ( Method (..)
-  , Handler
 
   -- Request
   , Request
@@ -16,6 +15,7 @@ module Zero.Server
   , failureResponse
 
   -- Handlers
+  , Handler
   , simpleHandler
   , effectfulHandler
 
@@ -45,15 +45,21 @@ import qualified Web.Scotty as Scotty
 
 -- import qualified Debug.Trace as Debug
 
+-- | HTTP Method
+-- Can be: `GET` or `POST`.
 data Method
   = GET
   | POST
   deriving (Eq, Show)
 
+-- | HTTP Request. Note that you can't pattern match on this directly.
+-- You'll need something like `requestBody`.
 data Request
   = Request String
   deriving (Eq, Show)
 
+-- | Extract the request body as a `String`.
+-- This is the raw request body, no parsing happens at this stage.
 requestBody :: Request -> String
 requestBody (Request body) = body
 
@@ -62,6 +68,8 @@ data ResponseType
   | JsonResponse
   | FailureResponse
 
+-- | HTTP Response. Note you can't create values of this type directly.
+-- You'll need something like `stringResponse`, `jsonResponse` or `failureResponse`.
 data Response
   = Response
       { responseType :: ResponseType
@@ -100,18 +108,29 @@ logInfo :: MonadIO m => String -> m ()
 logInfo
   = liftIO . putStrLn
 
+-- | Set the response body to some JSON value.
+-- It helps to read this signature as:
+-- > If you give me something that can be serialized to JSON,
+-- > I'll give you back a response with a JSON serialized body.
 jsonResponse :: Aeson.ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
 
+-- | Set the response body as a raw `String`.
 stringResponse :: String -> Response
 stringResponse str
   = Response StringResponse $ toLazy (Text.pack str)
 
+-- | Send an error to the client and set the status code to `400`.
 failureResponse :: Text -> Response
 failureResponse err
   = Response FailureResponse (toLazy err)
 
+-- | An `Handler` is something that can handle HTTP requests.
+-- You can create handlers with these functions:
+-- * `simpleHandler`
+-- * `effectfulHandler`
+-- * `statefulHandler`
 data Handler
   = SimpleHandler    StatelessHandler
   | EffectfulHandler (IO [StatelessHandler])
