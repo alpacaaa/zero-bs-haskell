@@ -20,8 +20,8 @@ module Zero.Server
   , effectfulHandler
 
   , StatefulHandler
-  , handlersWithState
   , statefulHandler
+  , handlersWithState
 
   -- Server
   , startServer
@@ -96,6 +96,10 @@ handleResponse path req res = do
     json
       = Scotty.setHeader "Content-Type" "application/json; charset=utf-8"
 
+-- | Given a `String`, either succesfully parse it to a type `a`
+-- or return an error (as a `String`).
+-- It's very important for the compiler to know what the `a` type is.
+-- If you're having problem with `Ambiguous occurrence...`, read this article (TODO).
 decodeJson :: Aeson.FromJSON a => String -> Either Text a
 decodeJson input
   = left Text.pack $ Aeson.eitherDecode' (toLazy $ Text.pack input)
@@ -108,7 +112,7 @@ logInfo :: MonadIO m => String -> m ()
 logInfo
   = liftIO . putStrLn
 
--- | Set the response body to some JSON value.
+-- | Create a `Response` with some JSON value.
 -- It helps to read this signature as:
 -- > If you give me something that can be serialized to JSON,
 -- > I'll give you back a response with a JSON serialized body.
@@ -116,21 +120,24 @@ jsonResponse :: Aeson.ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
 
--- | Set the response body as a raw `String`.
+-- | Create a `Response` with some raw value (just a plain `String`).
 stringResponse :: String -> Response
 stringResponse str
   = Response StringResponse $ toLazy (Text.pack str)
 
--- | Send an error to the client and set the status code to `400`.
+-- | Create a `Response` with an error and set the status code to `400`.
 failureResponse :: Text -> Response
 failureResponse err
   = Response FailureResponse (toLazy err)
 
 -- | An `Handler` is something that can handle HTTP requests.
--- You can create handlers with these functions:
--- * `simpleHandler`
--- * `effectfulHandler`
--- * `statefulHandler`
+-- | You can create handlers with these functions:
+--
+--     * `simpleHandler`
+--
+--     * `effectfulHandler`
+--
+--     * `statefulHandler`
 data Handler
   = SimpleHandler    StatelessHandler
   | EffectfulHandler (IO [StatelessHandler])
@@ -148,14 +155,10 @@ data StatefulHandler state
       String
       (state -> Request -> (state, Response))
 
-statefulHandler
-  :: Method
-  -> String
-  -> (state -> Request -> (state, Response))
-  -> StatefulHandler state
-statefulHandler
-  = StatefulHandler
-
+-- | Most basic HTTP handler.
+-- With a `simpleHandler` you can turn a `Request` into a `Response`,
+-- but you're not allowed to use any side effects or maintain any state
+-- across requests.
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
   = SimpleHandler
@@ -163,6 +166,12 @@ simpleHandler method path toResponse
       req <- createRequest
       handleResponse path req (toResponse req)
 
+-- | An handler that allows side effects (note the `IO` in `IO Response`).
+-- Unlike a `simpleHandler`, you can now have `IO` operations executed in
+-- order to generate a `Response`.
+--
+-- For example, you might want to query a database or make an HTTP request
+-- to some webservice and use the result in the `Response` body.
 effectfulHandler :: Method -> String -> (Request -> IO Response) -> Handler
 effectfulHandler method path toResponse
   = SimpleHandler
@@ -170,6 +179,14 @@ effectfulHandler method path toResponse
       req <- createRequest
       res <- Scotty.liftAndCatchIO $ toResponse req
       handleResponse path req res
+
+statefulHandler
+  :: Method
+  -> String
+  -> (state -> Request -> (state, Response))
+  -> StatefulHandler state
+statefulHandler
+  = StatefulHandler
 
 handlersWithState
   :: state
