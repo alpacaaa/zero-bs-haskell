@@ -149,6 +149,8 @@ data StatelessHandler
       , handlerFn     :: Scotty.ActionM ()
       }
 
+-- | A data type to describe stateful handlers.
+-- TODO decide if best to keep `statefulHandler` or just stick with the type.
 data StatefulHandler state
   = StatefulHandler
       Method
@@ -180,6 +182,15 @@ effectfulHandler method path toResponse
       res <- Scotty.liftAndCatchIO $ toResponse req
       handleResponse path req res
 
+-- | A `StatefulHandler` allows you to keep some state around across requests.
+-- For example, if you want to implement a counter, you could keep the current
+-- tally as state, and increase it everytime a `Request` comes in.
+--
+-- The tricky bit is understanding this callback `(state -> Request -> (state, Response))`.
+-- Compare it with the simpler `Request -> Response`. The difference is that you get
+-- the current state as a parameter, and you no longer return *just* the `Response`,
+-- but an updated version of the state as well. For a more in depth explanation,
+-- read this article (TODO).
 statefulHandler
   :: Method
   -> String
@@ -188,6 +199,16 @@ statefulHandler
 statefulHandler
   = StatefulHandler
 
+-- | Once you have some `StatefulHandler`s that share the same state (that's important!),
+-- you can create a proper `Handler` that you can use in your server definition.
+--
+-- In fact, you cannot use `StatefulHandler` directly in `startServer`, as it only
+-- accepts values of type `Handler`.
+--
+-- What's the first parameter `state` you ask? Well, it's the initial state!
+-- The server needs an initial value to pass along the first `Request`, how
+-- else would it be able to come up with some state (especially given that it
+-- knows nothing about what `state` _is_, it could be anything! Yay, polymorphysm).
 handlersWithState
   :: state
   -> [StatefulHandler state]
@@ -208,6 +229,7 @@ handlersWithState initialState handlers
 
             handleResponse path req res
 
+-- | Exactly like `startServer`, but allows you to specify a different port.
 startServerOnPort :: Int -> [Handler] -> IO ()
 startServerOnPort port serverDef = do
   logInfo ""
@@ -259,6 +281,12 @@ startServerOnPort port serverDef = do
       $ Text.pack
       $ show (handlerMethod h)
 
+-- | Start the server with the given `Handler`s.
+-- Click on `Handler` to know how to make one.
+--
+-- The server will listen on port `7879`. If you're following along with the
+-- exercises, they expect to find a server running on that port. In other words,
+-- you are good to go!
 startServer :: [Handler] -> IO ()
 startServer
   = startServerOnPort 7879
