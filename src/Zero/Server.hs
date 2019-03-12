@@ -28,7 +28,6 @@ module Zero.Server
   , startServerOnPort
   ) where
 
-import Control.Arrow (left)
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
@@ -100,9 +99,9 @@ handleResponse path req res = do
 -- or return an error (as a `String`).
 -- It's very important for the compiler to know what the `a` type is.
 -- If you're having problem with `Ambiguous occurrence...`, read this article (TODO).
-decodeJson :: Aeson.FromJSON a => String -> Either Text a
+decodeJson :: Aeson.FromJSON a => String -> Either String a
 decodeJson input
-  = left Text.pack $ Aeson.eitherDecode' (toLazy $ Text.pack input)
+  = Aeson.eitherDecode' (toLazy $ Text.pack input)
 
 toLazy :: Text -> ByteString.Lazy.ByteString
 toLazy
@@ -126,9 +125,9 @@ stringResponse str
   = Response StringResponse $ toLazy (Text.pack str)
 
 -- | Create a `Response` with an error and set the status code to `400`.
-failureResponse :: Text -> Response
+failureResponse :: String -> Response
 failureResponse err
-  = Response FailureResponse (toLazy err)
+  = Response FailureResponse $ toLazy (Text.pack err)
 
 -- | An `Handler` is something that can handle HTTP requests.
 -- | You can create handlers with these functions:
