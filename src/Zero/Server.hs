@@ -130,13 +130,13 @@ failureResponse err
   = Response FailureResponse $ toLazy (Text.pack err)
 
 -- | An `Handler` is something that can handle HTTP requests.
--- | You can create handlers with these functions:
+--   You can create handlers with these functions:
 --
 --     * `simpleHandler`
 --
 --     * `effectfulHandler`
 --
---     * `statefulHandler`
+--     * `handlersWithState`
 data Handler
   = SimpleHandler    StatelessHandler
   | EffectfulHandler (IO [StatelessHandler])
@@ -168,8 +168,7 @@ simpleHandler method path toResponse
       handleResponse path req (toResponse req)
 
 -- | An handler that allows side effects (note the `IO` in `IO Response`).
--- Unlike a `simpleHandler`, you can now have `IO` operations executed in
--- order to generate a `Response`.
+-- Unlike a `simpleHandler`, you can now have `IO` operations.
 --
 -- For example, you might want to query a database or make an HTTP request
 -- to some webservice and use the result in the `Response` body.
