@@ -1,0 +1,75 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 18e9784523221db68dfc24a0ea3f4233c420e3223d0eb72d8ce9d53fdb2128eb
+
+name:           zero-bullshit-haskell
+version:        0.1.0.0
+synopsis:       Simple HTTP server library.
+description:    Please see the README on GitHub at <https://github.com/githubuser/request-response#readme>
+category:       Web
+homepage:       https://github.com/alpacaaa/zero-bullshit-haskell#readme
+bug-reports:    https://github.com/alpacaaa/zero-bullshit-haskell/issues
+author:         Marco Sampellegrini
+maintainer:     babbonatale@alpcaaa.net
+copyright:      2019 Marco Sampellegrini
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/alpacaaa/zero-bullshit-haskell
+
+library
+  exposed-modules:
+      Example
+      Zero.Server
+  other-modules:
+      Paths_zero_bullshit_haskell
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , containers
+    , http-types
+    , random
+    , scotty
+    , stm
+    , text
+    , wai
+    , wai-cors
+  default-language: Haskell2010
+
+executable exercises
+  main-is: Main.hs
+  other-modules:
+      Ex01StaticString.StaticString
+      Ex02Echo.Echo
+      Ex03CaseMatch.CaseMatch
+      Paths_zero_bullshit_haskell
+  hs-source-dirs:
+      exercises
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , containers
+    , http-types
+    , random
+    , scotty
+    , stm
+    , text
+    , wai
+    , wai-cors
+    , zero-bullshit-haskell
+  default-language: Haskell2010

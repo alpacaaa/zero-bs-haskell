@@ -1,22 +1,21 @@
-name:                request-response
+name:                zero-bullshit-haskell
 version:             0.1.0.0
-github:              "githubuser/request-response"
+github:              "alpacaaa/zero-bullshit-haskell"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Marco Sampellegrini"
+maintainer:          "babbonatale@alpcaaa.net"
+copyright:           "2019 Marco Sampellegrini"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 ghc-options:
   - -Wall
-  - -Werror
+  # - -Werror
 
 # Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
+synopsis:            Simple HTTP server library.
+category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
@@ -25,7 +24,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - aeson
-- base
+- base >= 4.11 && < 5
 - bytestring
 - containers
 - http-types
@@ -47,18 +46,5 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    default-extensions:
-    - OverloadedStrings
     dependencies:
-    - request-response
-
-tests:
-  request-response-test:
-    main:                Spec.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - request-response
+    - zero-bullshit-haskell

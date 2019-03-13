@@ -8,3 +8,6 @@ bundle-frontend:
 
 generate-docs:
 	stack exec -- haddock --html --hyperlinked-source src/Zero/Server.hs --odir docs
+
+build-pedantic:
+	stack build --fast --pedantic
