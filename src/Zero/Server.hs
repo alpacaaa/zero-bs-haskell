@@ -3,18 +3,18 @@
 module Zero.Server
   ( Method (..)
 
-  -- Request
+  -- * Request
   , Request
   , requestBody
   , decodeJson
 
-  -- Response
+  -- * Response
   , Response
   , stringResponse
   , jsonResponse
   , failureResponse
 
-  -- Handlers
+  -- * Handlers
   , Handler
   , simpleHandler
   , effectfulHandler
@@ -23,13 +23,14 @@ module Zero.Server
   , statefulHandler
   , handlersWithState
 
-  -- Server
+  -- * Server
   , startServer
   , startServerOnPort
   ) where
 
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 
 import qualified Control.Concurrent.STM as STM
@@ -44,14 +45,17 @@ import qualified Web.Scotty as Scotty
 
 -- import qualified Debug.Trace as Debug
 
--- | HTTP Method
--- Can be: `GET` or `POST`.
+-- | HTTP Method.
+--
+-- Only `GET` or `POST` for simplicity.
 data Method
   = GET
   | POST
   deriving (Eq, Show)
 
--- | HTTP Request. Note that you can't pattern match on this directly.
+-- | HTTP Request.
+--
+-- Note that you can't pattern match on this directly.
 -- You'll need something like `requestBody`.
 data Request
   = Request String
@@ -99,7 +103,7 @@ handleResponse path req res = do
 -- or return an error (as a `String`).
 -- It's very important for the compiler to know what the `a` type is.
 -- If you're having problem with `Ambiguous occurrence...`, read this article (TODO).
-decodeJson :: Aeson.FromJSON a => String -> Either String a
+decodeJson :: FromJSON a => String -> Either String a
 decodeJson input
   = Aeson.eitherDecode' (toLazy $ Text.pack input)
 
@@ -115,7 +119,7 @@ logInfo
 -- It helps to read this signature as:
 -- > If you give me something that can be serialized to JSON,
 -- > I'll give you back a response with a JSON serialized body.
-jsonResponse :: Aeson.ToJSON a => a -> Response
+jsonResponse :: ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
 

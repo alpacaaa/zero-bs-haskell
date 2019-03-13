@@ -4,3 +4,6 @@ request-response.cabal
 .DS_Store
 node_modules/
 exercises/bundle.js
+dist/
+dist-newstyle/
+.ghc.environment*

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 18e9784523221db68dfc24a0ea3f4233c420e3223d0eb72d8ce9d53fdb2128eb
+-- hash: 62014bdc5d5f26e4769d69bd77f547b55a45c8ff9281bb1b23795f9da99da61b
 
 name:           zero-bullshit-haskell
 version:        0.1.0.0
@@ -28,7 +28,6 @@ source-repository head
 
 library
   exposed-modules:
-      Example
       Zero.Server
   other-modules:
       Paths_zero_bullshit_haskell
