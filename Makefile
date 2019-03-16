@@ -8,7 +8,8 @@ bundle-frontend:
 
 generate-docs:
 	# stack exec -- haddock --html --hyperlinked-source src/Zero/Server.hs --odir docs
-	cabal new-build --enable-documentation --haddock-for-hackage
+	# cabal new-build --enable-documentation --haddock-for-hackage
+	cabal new-haddock
 
 build-pedantic:
 	stack build --fast --pedantic

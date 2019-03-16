@@ -1,7 +1,12 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Zero.Server
-  ( Method (..)
+  (
+  -- * Server
+    startServer
+  , Handler
+  , Method (..)
+  , simpleHandler
 
   -- * Request
   , Request
@@ -14,17 +19,13 @@ module Zero.Server
   , jsonResponse
   , failureResponse
 
-  -- * Handlers
-  , Handler
-  , simpleHandler
+  -- * Advanced stuff
   , effectfulHandler
 
   , StatefulHandler
   , statefulHandler
   , handlersWithState
 
-  -- * Server
-  , startServer
   , startServerOnPort
   ) where
 
@@ -55,8 +56,7 @@ data Method
 
 -- | HTTP Request.
 --
--- Note that you can't pattern match on this directly.
--- You'll need something like `requestBody`.
+-- Whenever you want to inspect the content of a `Request`, use `requestBody`.
 data Request
   = Request String
   deriving (Eq, Show)
@@ -71,8 +71,23 @@ data ResponseType
   | JsonResponse
   | FailureResponse
 
--- | HTTP Response. Note you can't create values of this type directly.
+-- | HTTP Response.
+--
+-- Note you __cannot__ create values of this type directly.
 -- You'll need something like `stringResponse`, `jsonResponse` or `failureResponse`.
+--
+-- > isBobHandler :: Request -> Response
+-- > isBobHandler req
+-- >   = if requestBody req == "Bob"
+-- >       then stringResponse "It's definitely Bob."
+-- >       else failureResponse "WOAH, not Bob. Be careful."
+-- >
+-- > main :: IO ()
+-- > main
+-- >   = startServer [ simpleHandler POST "/is-bob" isBobHandler ]
+--
+-- >>> curl -XPOST localhost:7879/is-bob -d "Bob"
+-- It's definitely Bob.
 data Response
   = Response
       { responseType :: ResponseType
@@ -116,9 +131,21 @@ logInfo
   = liftIO . putStrLn
 
 -- | Create a `Response` with some JSON value.
--- It helps to read this signature as:
+--   It helps to read this signature as:
+--
 -- > If you give me something that can be serialized to JSON,
 -- > I'll give you back a response with a JSON serialized body.
+--
+--   As an example, @magicNumbers@ of type @[Int]@ can be serialized
+--   to JSON, because both the @List@ type and the @Int@ type can be
+--   turned into JSON.
+--
+-- > magicNumbers :: [Int]
+-- > magicNumbers = [1, 5, 92, 108]
+-- >
+-- > numbersHandler :: Request -> Response
+-- > numbersHandler req
+-- >   = jsonResponse magicNumbers
 jsonResponse :: ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
@@ -128,7 +155,7 @@ stringResponse :: String -> Response
 stringResponse str
   = Response StringResponse $ toLazy (Text.pack str)
 
--- | Create a `Response` with an error and set the status code to `400`.
+-- | Create a `Response` with an error and set the status code to @400@.
 failureResponse :: String -> Response
 failureResponse err
   = Response FailureResponse $ toLazy (Text.pack err)
@@ -161,9 +188,18 @@ data StatefulHandler state
       (state -> Request -> (state, Response))
 
 -- | Most basic HTTP handler.
--- With a `simpleHandler` you can turn a `Request` into a `Response`,
--- but you're not allowed to use any side effects or maintain any state
--- across requests.
+--
+--   With a `simpleHandler` you can turn a `Request` into a `Response`,
+--   but you're not allowed to use any side effects or maintain any state
+--   across requests.
+--
+-- > handleRequest :: Request -> Response
+-- > handleRequest req
+-- >   = stringResponse "hello"
+-- >
+-- > helloHandler :: Handler
+-- > helloHandler
+-- >   = simpleHandler GET "/hello" handleRequest
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
   = SimpleHandler
@@ -283,12 +319,30 @@ startServerOnPort port serverDef = do
       $ Text.pack
       $ show (handlerMethod h)
 
--- | Start the server with the given `Handler`s.
--- Click on `Handler` to know how to make one.
+-- | Start the server on port @7879@.
 --
--- The server will listen on port `7879`. If you're following along with the
--- exercises, they expect to find a server running on that port. In other words,
--- you are good to go!
+--   As an example, this is a server that listens to @/hello@ and @/ping@ requests.
+--
+-- > helloHandler :: Handler
+-- > helloHandler
+-- >   = simpleHandler GET "/hello" $ \req -> stringResponse "hello"
+-- >
+-- > pingHandler :: Handler
+-- > pingHandler
+-- >   = simpleHandler GET "/ping" $ \req -> stringResponse "pong"
+-- >
+-- > main :: IO ()
+-- > main
+-- >   = startServer [ helloHandler, pingHandler ]
+--
+-- >>> curl localhost:7879/hello
+-- hello
+-- >>> curl localhost:7879/ping
+-- pong
+--
+--   The server will listen on port @7879@. If you're following along with the
+--   exercises, they expect to find a server running on that port. In other words,
+--   you are good to go!
 startServer :: [Handler] -> IO ()
 startServer
   = startServerOnPort 7879
