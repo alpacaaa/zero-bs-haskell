@@ -335,11 +335,11 @@ startServerOnPort port serverDef = do
 --
 -- > helloHandler :: Handler
 -- > helloHandler
--- >   = simpleHandler GET "/hello" $ \req -> stringResponse "hello"
+-- >   = simpleHandler GET "/hello" (\req -> stringResponse "hello")
 -- >
 -- > pingHandler :: Handler
 -- > pingHandler
--- >   = simpleHandler GET "/ping" $ \req -> stringResponse "pong"
+-- >   = simpleHandler GET "/ping" (\req -> stringResponse "pong")
 -- >
 -- > main :: IO ()
 -- > main
