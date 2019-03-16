@@ -5,9 +5,8 @@
 --   This library has been written as a companion to the Zero Bullshit Haskell
 --   series, available here https://github.com/alpacaaa/TODOTODO.
 --
---   If you want to learn Haskell, you came to the right place! This documentation
---   can be handy, but refer to the main repo for real world exercises and in depth
---   explanations.
+--   This documentation can be handy, but refer to the main repo for real world
+--   exercises and in depth explanations.
 module Zero.Server
   (
   -- * Server
@@ -84,15 +83,16 @@ data ResponseType
 -- Note you __cannot__ create values of this type directly.
 -- You'll need something like `stringResponse`, `jsonResponse` or `failureResponse`.
 --
--- > isBobHandler :: Request -> Response
+-- > isBobHandler :: Server.Request -> Server.Response
 -- > isBobHandler req
 -- >   = if requestBody req == "Bob"
--- >       then stringResponse "It's definitely Bob."
--- >       else failureResponse "WOAH, not Bob. Be careful."
+-- >       then Server.stringResponse "It's definitely Bob."
+-- >       else Server.failureResponse "WOAH, not Bob. Be careful."
 -- >
 -- > main :: IO ()
 -- > main
--- >   = startServer [ simpleHandler POST "/is-bob" isBobHandler ]
+-- >   = Server.startServer
+-- >       [ Server.simpleHandler Server.POST "/is-bob" isBobHandler ]
 --
 -- >>> curl -XPOST localhost:7879/is-bob -d "Bob"
 -- It's definitely Bob.
@@ -151,9 +151,9 @@ logInfo
 -- > magicNumbers :: [Int]
 -- > magicNumbers = [1, 5, 92, 108]
 -- >
--- > numbersHandler :: Request -> Response
+-- > numbersHandler :: Server.Request -> Server.Response
 -- > numbersHandler req
--- >   = jsonResponse magicNumbers
+-- >   = Server.jsonResponse magicNumbers
 jsonResponse :: ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
@@ -201,13 +201,13 @@ data StatefulHandler state
 --   but you're not allowed to use any side effects or maintain any state
 --   across requests.
 --
--- > handleRequest :: Request -> Response
+-- > handleRequest :: Server.Request -> Server.Response
 -- > handleRequest req
--- >   = stringResponse "hello"
+-- >   = Server.stringResponse "hello"
 -- >
 -- > helloHandler :: Handler
 -- > helloHandler
--- >   = simpleHandler GET "/hello" handleRequest
+-- >   = Server.simpleHandler Server.GET "/hello" handleRequest
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
   = SimpleHandler
@@ -333,17 +333,19 @@ startServerOnPort port serverDef = do
 --
 --   As an example, this is a server that listens to @/hello@ and @/ping@ requests.
 --
--- > helloHandler :: Handler
--- > helloHandler
--- >   = simpleHandler GET "/hello" (\req -> stringResponse "hello")
+-- > import qualified Zero.Server as Server
 -- >
--- > pingHandler :: Handler
+-- > helloHandler :: Server.Handler
+-- > helloHandler
+-- >   = Server.simpleHandler Server.GET "/hello" (\req -> stringResponse "hello")
+-- >
+-- > pingHandler :: Server.Handler
 -- > pingHandler
--- >   = simpleHandler GET "/ping" (\req -> stringResponse "pong")
+-- >   = Server.simpleHandler Server.GET "/ping" (\req -> stringResponse "pong")
 -- >
 -- > main :: IO ()
 -- > main
--- >   = startServer [ helloHandler, pingHandler ]
+-- >   = Server.startServer [ helloHandler, pingHandler ]
 --
 -- >>> curl localhost:7879/hello
 -- hello
