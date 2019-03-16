@@ -1,5 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+-- | A very simple webserver library inspired by Sinatra, Express.js and the likes.
+--
+--   This library has been written as a companion to the Zero Bullshit Haskell
+--   series, available here https://github.com/alpacaaa/TODOTODO.
+--
+--   If you want to learn Haskell, you came to the right place! This documentation
+--   can be handy, but refer to the main repo for real world exercises and in depth
+--   explanations.
 module Zero.Server
   (
   -- * Server
@@ -207,7 +215,7 @@ simpleHandler method path toResponse
       req <- createRequest
       handleResponse path req (toResponse req)
 
--- | An handler that allows side effects (note the `IO` in `IO Response`).
+-- | An handler that allows side effects (note the `IO` in @IO Response@).
 -- Unlike a `simpleHandler`, you can now have `IO` operations.
 --
 -- For example, you might want to query a database or make an HTTP request
@@ -221,14 +229,15 @@ effectfulHandler method path toResponse
       handleResponse path req res
 
 -- | A `StatefulHandler` allows you to keep some state around across requests.
--- For example, if you want to implement a counter, you could keep the current
--- tally as state, and increase it everytime a `Request` comes in.
+--   For example, if you want to implement a counter, you could keep the current
+--   tally as state, and increase it everytime a `Request` comes in.
 --
--- The tricky bit is understanding this callback `(state -> Request -> (state, Response))`.
--- Compare it with the simpler `Request -> Response`. The difference is that you get
--- the current state as a parameter, and you no longer return *just* the `Response`,
--- but an updated version of the state as well. For a more in depth explanation,
--- read this article (TODO).
+--   The tricky bit is understanding this callback @(state -> Request -> (state, Response))@.
+--
+--   Compare it with the simpler @Request -> Response@. The difference is that you get
+--   the current state as a parameter, and you no longer return __just__ the @Response@,
+--   but an updated version of the state as well. For a more in depth explanation,
+--   read this article (TODO).
 statefulHandler
   :: Method
   -> String
@@ -237,16 +246,17 @@ statefulHandler
 statefulHandler
   = StatefulHandler
 
--- | Once you have some `StatefulHandler`s that share the same state (that's important!),
--- you can create a proper `Handler` that you can use in your server definition.
+-- | Once you have some `StatefulHandler`s that share the same state type 
+--   (that's important!),
+--   you can create a proper `Handler` that you can use in your server definition.
 --
--- In fact, you cannot use `StatefulHandler` directly in `startServer`, as it only
--- accepts values of type `Handler`.
+--   In fact, you cannot use `StatefulHandler` directly in `startServer`, as it only
+--   accepts values of type `Handler`.
 --
--- What's the first parameter `state` you ask? Well, it's the initial state!
--- The server needs an initial value to pass along the first `Request`, how
--- else would it be able to come up with some state (especially given that it
--- knows nothing about what `state` _is_, it could be anything! Yay, polymorphysm).
+--   What's the first parameter `state` you ask? Well, it's the initial state!
+--   The server needs an initial value to pass along the first `Request`, how
+--   else would it be able to come up with some state (especially given that it
+--   knows nothing about what `state` _is_, it could be anything! Yay, polymorphysm).
 handlersWithState
   :: state
   -> [StatefulHandler state]
