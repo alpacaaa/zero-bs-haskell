@@ -2,6 +2,7 @@
 import qualified Ex01StaticString.StaticString
 import qualified Ex02Echo.Echo
 import qualified Ex03CaseMatch.CaseMatch
+import qualified Ex04StringManipulation.StringManipulation
 
 import qualified System.Environment
 

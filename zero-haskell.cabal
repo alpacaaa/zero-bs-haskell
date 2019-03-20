@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b8e6ec5a4db1066e0ab1cb68070811194971694f7ac450a50c0925b804dbb7ed
+-- hash: 551de270abf3e3497dddfb43af57a1c6daad9955ce7b5b46b6bf971ab9347a77
 
 name:           zero-haskell
 version:        0.1.0.0
@@ -54,6 +54,7 @@ executable exercises
       Ex01StaticString.StaticString
       Ex02Echo.Echo
       Ex03CaseMatch.CaseMatch
+      Ex04StringManipulation.StringManipulation
       Paths_zero_haskell
   hs-source-dirs:
       exercises
