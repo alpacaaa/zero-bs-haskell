@@ -13,5 +13,6 @@ main = do
     ["1"] -> Ex01StaticString.StaticString.main
     ["2"] -> Ex02Echo.Echo.main
     ["3"] -> Ex03CaseMatch.CaseMatch.main
+    ["4"] -> Ex04StringManipulation.StringManipulation.main
     _     ->
       putStrLn "Invalid exercise number. Provide number as a cli argument."

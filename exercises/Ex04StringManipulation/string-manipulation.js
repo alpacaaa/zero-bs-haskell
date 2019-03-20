@@ -4,21 +4,16 @@ const bodyParser = require("body-parser")
 
 app.use(bodyParser.raw({ type: "*/*" }))
 
-app.post("/case", (req, res) => {
+app.post("/string-manipulation", (req, res) => {
   let result
+  const body = req.body.toString()
+  const search = "I'm positive"
 
-  switch (req.body.toString()) {
-    case "1":
-      result = "one"
-      break
-    case "2":
-      result = "two"
-      break
-    case "3":
-      result = "three"
-      break
-    default:
-      result = "What am I, a mathematician?"
+  if (body.slice(0, search.length) === search) {
+    result = "I think" + body.substr(search.length)
+  }
+  else {
+    result = body
   }
 
   res.send(result)

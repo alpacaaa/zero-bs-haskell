@@ -8,6 +8,7 @@ const should = chai.should()
 const Ex01 = require('./Ex01StaticString/test.js')
 const Ex02 = require('./Ex02Echo/test.js')
 const Ex03 = require('./Ex03CaseMatch/test.js')
+const Ex04 = require('./Ex04StringManipulation/test.js')
 
 //const exercise = process.env.EXERCISE
 
@@ -32,6 +33,7 @@ module.exports = (exercise) => {
     case "1": return Ex01(server)
     case "2": return Ex02(server)
     case "3": return Ex03(server)
+    case "4": return Ex04(server)
     default:
       throw new Error(`Invalid exercise ${exercise}`)
   }
