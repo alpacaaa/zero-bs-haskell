@@ -4,10 +4,9 @@ import qualified Data.List as List
 import qualified Zero.Server as Server
 
 
-stringManipulationHandler :: Server.Request -> Server.Response
-stringManipulationHandler req
+manipulationHandler :: Server.Request -> Server.Response
+manipulationHandler req
   = Server.stringResponse res
-
   where
     search
       = "I'm positive"
@@ -26,5 +25,5 @@ stringManipulationHandler req
 main :: IO ()
 main
   = Server.startServer
-      [ Server.simpleHandler Server.POST "/string-manipulation" stringManipulationHandler
+      [ Server.simpleHandler Server.POST "/string-manipulation" manipulationHandler
       ]
