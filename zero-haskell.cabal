@@ -4,12 +4,12 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 48af056c2befd9ef1d037fa3e8dab204edf01f1349978f705a6b18d18cb38e4f
+-- hash: b8e6ec5a4db1066e0ab1cb68070811194971694f7ac450a50c0925b804dbb7ed
 
 name:           zero-haskell
 version:        0.1.0.0
 synopsis:       Simple HTTP server library.
-description:    Please see the README on GitHub at <https://github.com/githubuser/request-response#readme>
+description:    Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
 category:       Web
 homepage:       https://github.com/alpacaaa/zero-haskell#readme
 bug-reports:    https://github.com/alpacaaa/zero-haskell/issues
