@@ -4,15 +4,15 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 62014bdc5d5f26e4769d69bd77f547b55a45c8ff9281bb1b23795f9da99da61b
+-- hash: 48af056c2befd9ef1d037fa3e8dab204edf01f1349978f705a6b18d18cb38e4f
 
-name:           zero-bullshit-haskell
+name:           zero-haskell
 version:        0.1.0.0
 synopsis:       Simple HTTP server library.
 description:    Please see the README on GitHub at <https://github.com/githubuser/request-response#readme>
 category:       Web
-homepage:       https://github.com/alpacaaa/zero-bullshit-haskell#readme
-bug-reports:    https://github.com/alpacaaa/zero-bullshit-haskell/issues
+homepage:       https://github.com/alpacaaa/zero-haskell#readme
+bug-reports:    https://github.com/alpacaaa/zero-haskell/issues
 author:         Marco Sampellegrini
 maintainer:     babbonatale@alpcaaa.net
 copyright:      2019 Marco Sampellegrini
@@ -24,13 +24,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/alpacaaa/zero-bullshit-haskell
+  location: https://github.com/alpacaaa/zero-haskell
 
 library
   exposed-modules:
       Zero.Server
   other-modules:
-      Paths_zero_bullshit_haskell
+      Paths_zero_haskell
   hs-source-dirs:
       src
   ghc-options: -Wall
@@ -54,7 +54,7 @@ executable exercises
       Ex01StaticString.StaticString
       Ex02Echo.Echo
       Ex03CaseMatch.CaseMatch
-      Paths_zero_bullshit_haskell
+      Paths_zero_haskell
   hs-source-dirs:
       exercises
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
@@ -70,5 +70,5 @@ executable exercises
     , text
     , wai
     , wai-cors
-    , zero-bullshit-haskell
+    , zero-haskell
   default-language: Haskell2010

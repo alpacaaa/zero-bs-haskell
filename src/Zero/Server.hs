@@ -2,11 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | A very simple webserver library inspired by Sinatra, Express.js and the likes.
 --
---   This library has been written as a companion to the Zero Bullshit Haskell
---   series, available here https://github.com/alpacaaa/TODOTODO.
---
---   This documentation can be handy, but refer to the main repo for real world
---   exercises and in depth explanations.
 module Zero.Server
   (
   -- * Server
@@ -125,7 +120,7 @@ handleResponse path req res = do
 -- | Given a `String`, either succesfully parse it to a type `a`
 -- or return an error (as a `String`).
 -- It's very important for the compiler to know what the `a` type is.
--- If you're having problem with `Ambiguous occurrence...`, read this article (TODO).
+-- If you're having problem with `Ambiguous occurrence...`, read TODO.
 decodeJson :: FromJSON a => String -> Either String a
 decodeJson input
   = Aeson.eitherDecode' (toLazy $ Text.pack input)
@@ -188,12 +183,11 @@ data StatelessHandler
       }
 
 -- | A data type to describe stateful handlers.
--- TODO decide if best to keep `statefulHandler` or just stick with the type.
 data StatefulHandler state
   = StatefulHandler
       Method
       String
-      (state -> Request -> (state, Response))
+      (state -> Request -> (state, Response)) -- TODO decide if best to keep `statefulHandler` or just stick with the type.
 
 -- | Most basic HTTP handler.
 --
@@ -237,7 +231,7 @@ effectfulHandler method path toResponse
 --   Compare it with the simpler @Request -> Response@. The difference is that you get
 --   the current state as a parameter, and you no longer return __just__ the @Response@,
 --   but an updated version of the state as well. For a more in depth explanation,
---   read this article (TODO).
+--   read TODO.
 statefulHandler
   :: Method
   -> String
@@ -281,7 +275,7 @@ handlersWithState initialState handlers
 startServerOnPort :: Int -> [Handler] -> IO ()
 startServerOnPort port serverDef = do
   logInfo ""
-  logInfo "Zero Bullshit Haskell server"
+  logInfo "Zero Haskell server"
   logInfo "Ready to smash"
   logInfo ""
 

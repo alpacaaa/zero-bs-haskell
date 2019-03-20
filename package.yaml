@@ -1,6 +1,6 @@
-name:                zero-bullshit-haskell
+name:                zero-haskell
 version:             0.1.0.0
-github:              "alpacaaa/zero-bullshit-haskell"
+github:              "alpacaaa/zero-haskell"
 license:             BSD3
 author:              "Marco Sampellegrini"
 maintainer:          "babbonatale@alpcaaa.net"
@@ -47,4 +47,4 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - zero-bullshit-haskell
+    - zero-haskell
