@@ -2,7 +2,7 @@
 
 Simple webserver library.
 
-```
+```haskell
 import Zero.Server
 
 helloHandler :: Handler
