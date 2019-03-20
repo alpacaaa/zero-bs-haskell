@@ -78,16 +78,16 @@ data ResponseType
 -- Note you __cannot__ create values of this type directly.
 -- You'll need something like `stringResponse`, `jsonResponse` or `failureResponse`.
 --
--- > isBobHandler :: Server.Request -> Server.Response
+-- > isBobHandler :: Request -> Response
 -- > isBobHandler req
 -- >   = if requestBody req == "Bob"
--- >       then Server.stringResponse "It's definitely Bob."
--- >       else Server.failureResponse "WOAH, not Bob. Be careful."
+-- >       then stringResponse "It's definitely Bob."
+-- >       else failureResponse "WOAH, not Bob. Be careful."
 -- >
 -- > main :: IO ()
 -- > main
--- >   = Server.startServer
--- >       [ Server.simpleHandler Server.POST "/is-bob" isBobHandler ]
+-- >   = startServer
+-- >       [ simpleHandler POST "/is-bob" isBobHandler ]
 --
 -- >>> curl -XPOST localhost:7879/is-bob -d "Bob"
 -- It's definitely Bob.
@@ -146,9 +146,9 @@ logInfo
 -- > magicNumbers :: [Int]
 -- > magicNumbers = [1, 5, 92, 108]
 -- >
--- > numbersHandler :: Server.Request -> Server.Response
+-- > numbersHandler :: Request -> Response
 -- > numbersHandler req
--- >   = Server.jsonResponse magicNumbers
+-- >   = jsonResponse magicNumbers
 jsonResponse :: ToJSON a => a -> Response
 jsonResponse body
   = Response JsonResponse (Aeson.encode body)
@@ -195,13 +195,13 @@ data StatefulHandler state
 --   but you're not allowed to use any side effects or maintain any state
 --   across requests.
 --
--- > handleRequest :: Server.Request -> Server.Response
+-- > handleRequest :: Request -> Response
 -- > handleRequest req
--- >   = Server.stringResponse "hello"
+-- >   = stringResponse "hello"
 -- >
 -- > helloHandler :: Handler
 -- > helloHandler
--- >   = Server.simpleHandler Server.GET "/hello" handleRequest
+-- >   = simpleHandler GET "/hello" handleRequest
 simpleHandler :: Method -> String -> (Request -> Response) -> Handler
 simpleHandler method path toResponse
   = SimpleHandler
@@ -327,19 +327,17 @@ startServerOnPort port serverDef = do
 --
 --   As an example, this is a server that listens to @/hello@ and @/ping@ requests.
 --
--- > import qualified Zero.Server as Server
--- >
--- > helloHandler :: Server.Handler
+-- > helloHandler :: Handler
 -- > helloHandler
--- >   = Server.simpleHandler Server.GET "/hello" (\req -> stringResponse "hello")
+-- >   = simpleHandler GET "/hello" (\req -> stringResponse "hello")
 -- >
--- > pingHandler :: Server.Handler
+-- > pingHandler :: Handler
 -- > pingHandler
--- >   = Server.simpleHandler Server.GET "/ping" (\req -> stringResponse "pong")
+-- >   = simpleHandler GET "/ping" (\req -> stringResponse "pong")
 -- >
 -- > main :: IO ()
 -- > main
--- >   = Server.startServer [ helloHandler, pingHandler ]
+-- >   = startServer [ helloHandler, pingHandler ]
 --
 -- >>> curl localhost:7879/hello
 -- hello
