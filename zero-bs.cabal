@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 298c30bb5cab5efc0a274d895dd723526722c398572f02a30e7f93c8fbff744d
+-- hash: ac687b4294cedadd1cb5c2b987b86f918d99b3e73dd55127f6115b8f188622c9
 
 name:           zero-bs
 version:        0.1.0.0
-synopsis:       A simple and mildly useful webserver.
+synopsis:       A simple and mildly useful webserver library.
 description:    Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
 category:       Web
 homepage:       https://github.com/alpacaaa/zero-haskell#readme

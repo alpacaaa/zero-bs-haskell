@@ -14,7 +14,7 @@ ghc-options:
   # - -Werror
 
 # Metadata used when publishing your package
-synopsis:            A simple and mildly useful webserver.
+synopsis:            A simple and mildly useful webserver library.
 category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
