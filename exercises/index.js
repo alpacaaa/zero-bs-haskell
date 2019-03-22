@@ -9,9 +9,9 @@ const fail = () => {
 if (!n) fail()
 
 switch (n) {
-  case "1": return require('./Ex01StaticString/static-string.js')
-  case "2": return require('./Ex02Echo/echo.js')
-  case "3": return require('./Ex03CaseMatch/case-match.js')
-  case "4": return require('./Ex04StringManipulation/string-manipulation.js')
+  case "1": return require('./src/Ex01StaticString/static-string.js')
+  case "2": return require('./src/Ex02Echo/echo.js')
+  case "3": return require('./src/Ex03CaseMatch/case-match.js')
+  case "4": return require('./src/Ex04StringManipulation/string-manipulation.js')
   default: fail()
 }

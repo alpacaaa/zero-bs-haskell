@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ac687b4294cedadd1cb5c2b987b86f918d99b3e73dd55127f6115b8f188622c9
+-- hash: 9ef340270fd311f3f7eaa31a46d414271e29e0230a0e3deef28d0bae88e5a34b
 
 name:           zero-bs
 version:        0.1.0.0
@@ -17,10 +17,7 @@ author:         Marco Sampellegrini
 maintainer:     babbonatale@alpcaaa.net
 copyright:      2019 Marco Sampellegrini
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    ZERO-BS.md
 
 source-repository head
   type: git
@@ -46,30 +43,4 @@ library
     , text
     , wai
     , wai-cors
-  default-language: Haskell2010
-
-executable exercises
-  main-is: Main.hs
-  other-modules:
-      Ex01StaticString.StaticString
-      Ex02Echo.Echo
-      Ex03CaseMatch.CaseMatch
-      Ex04StringManipulation.StringManipulation
-      Paths_zero_bs
-  hs-source-dirs:
-      exercises
-  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      aeson
-    , base >=4.11 && <5
-    , bytestring
-    , containers
-    , http-types
-    , random
-    , scotty
-    , stm
-    , text
-    , wai
-    , wai-cors
-    , zero-bs
   default-language: Haskell2010

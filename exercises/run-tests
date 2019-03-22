@@ -2,17 +2,15 @@
 
 set -ex
 
-cd exercises
-
 run-with () {
-  # $1: ex number
-  # $2: program (ie. node index.js)
+  exercise=$1
+  command=$2
 
-  echo "Running exercise $1"
-  $2 $1 &
+  echo "Running exercise $exercise"
+  $command $exercise &
   PID=$!
 
-  EXERCISE=$1 npx mocha test-runner-node.js || {
+  EXERCISE=$exercise npx mocha test-runner-node.js || {
     echo "Test failed"
     kill -9 $PID
     exit 1

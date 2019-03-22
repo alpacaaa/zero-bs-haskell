@@ -1,0 +1,37 @@
+name:                zero-bs
+version:             0.1.0.0
+github:              "alpacaaa/zero-haskell"
+license:             BSD3
+author:              "Marco Sampellegrini"
+maintainer:          "babbonatale@alpcaaa.net"
+copyright:           "2019 Marco Sampellegrini"
+
+
+ghc-options:
+  - -Wall
+  # - -Werror
+
+# Metadata used when publishing your package
+synopsis:            A simple and mildly useful webserver library.
+category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
+
+dependencies:
+- aeson
+- base >= 4.11 && < 5
+- bytestring
+- containers
+- http-types
+- random
+- scotty
+- stm
+- text
+- wai
+- wai-cors
+
+library:
+  source-dirs: src
