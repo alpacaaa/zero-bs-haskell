@@ -1,4 +1,4 @@
-name:                zero-haskell
+name:                zero-bs
 version:             0.1.0.0
 github:              "alpacaaa/zero-haskell"
 license:             BSD3
@@ -7,14 +7,14 @@ maintainer:          "babbonatale@alpcaaa.net"
 copyright:           "2019 Marco Sampellegrini"
 
 extra-source-files:
-- README.md
+- ZERO-BS.md
 
 ghc-options:
   - -Wall
   # - -Werror
 
 # Metadata used when publishing your package
-synopsis:            Simple HTTP server library.
+synopsis:            A simple and mildly useful webserver.
 category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
@@ -47,4 +47,4 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - zero-haskell
+    - zero-bs

@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 551de270abf3e3497dddfb43af57a1c6daad9955ce7b5b46b6bf971ab9347a77
+-- hash: 298c30bb5cab5efc0a274d895dd723526722c398572f02a30e7f93c8fbff744d
 
-name:           zero-haskell
+name:           zero-bs
 version:        0.1.0.0
-synopsis:       Simple HTTP server library.
+synopsis:       A simple and mildly useful webserver.
 description:    Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
 category:       Web
 homepage:       https://github.com/alpacaaa/zero-haskell#readme
@@ -20,7 +20,7 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
+    ZERO-BS.md
 
 source-repository head
   type: git
@@ -30,7 +30,7 @@ library
   exposed-modules:
       Zero.Server
   other-modules:
-      Paths_zero_haskell
+      Paths_zero_bs
   hs-source-dirs:
       src
   ghc-options: -Wall
@@ -55,7 +55,7 @@ executable exercises
       Ex02Echo.Echo
       Ex03CaseMatch.CaseMatch
       Ex04StringManipulation.StringManipulation
-      Paths_zero_haskell
+      Paths_zero_bs
   hs-source-dirs:
       exercises
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
@@ -71,5 +71,5 @@ executable exercises
     , text
     , wai
     , wai-cors
-    , zero-haskell
+    , zero-bs
   default-language: Haskell2010
