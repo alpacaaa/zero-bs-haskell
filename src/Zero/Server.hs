@@ -183,6 +183,10 @@ data StatelessHandler
       }
 
 -- | A data type to describe stateful handlers.
+--
+--   Note that `startServer` only accepts `Handler` values, so you'll have to
+--   find a way to turn a `StatefulHandler` into an `Handler` (read up on
+--   `handlersWithState` as it does exactly that).
 data StatefulHandler state
   = StatefulHandler
       Method
@@ -242,7 +246,7 @@ statefulHandler
 
 -- | Once you have some `StatefulHandler`s that share the same state type 
 --   (that's important!),
---   you can create a proper `Handler` that you can use in your server definition.
+--   you can create a proper `Handler` to be used in your server definition.
 --
 --   In fact, you cannot use `StatefulHandler` directly in `startServer`, as it only
 --   accepts values of type `Handler`.
@@ -290,6 +294,9 @@ startServerOnPort port serverDef = do
     forM_ handlers $ \h -> do
       let (method, route, routeHandler) = makeRoute h
       Scotty.addroute method route routeHandler
+
+    -- Heartbeat sent by client
+    Scotty.get "/__ping" $ Scotty.json True
 
   where
     processHandler = \case
