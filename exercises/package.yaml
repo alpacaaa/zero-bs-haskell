@@ -8,7 +8,7 @@ copyright:           "2019 Marco Sampellegrini"
 
 ghc-options:
   - -Wall
-  # - -Werror
+  - -Werror
 
 # Metadata used when publishing your package
 synopsis:            A simple and mildly useful webserver library.
@@ -20,18 +20,8 @@ category:            Web
 description:         Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
 
 dependencies:
-- aeson
-- base >= 4.11 && < 5
-- bytestring
-- containers
-- http-types
-- random
-- scotty
-- stm
-- text
-- wai
-- wai-cors
-- zero-bs
+- base
+- zero-bullshit
 
 executables:
   exercises:

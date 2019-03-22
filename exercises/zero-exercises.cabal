@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3e51c5d5ed4a52fba4db0938a68cefb6b63103f4cea2e6e193a2367edfc9ba00
+-- hash: 762fdb17ce78e8728b5f234c84901e93ae445442c6d445584ecd9aca15e52737
 
 name:           zero-exercises
 version:        0.1.0.0
@@ -33,18 +33,8 @@ executable exercises
       Paths_zero_exercises
   hs-source-dirs:
       src
-  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
-    , base >=4.11 && <5
-    , bytestring
-    , containers
-    , http-types
-    , random
-    , scotty
-    , stm
-    , text
-    , wai
-    , wai-cors
-    , zero-bs
+      base
+    , zero-bullshit
   default-language: Haskell2010

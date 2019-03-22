@@ -1,4 +1,4 @@
-name:                zero-bs
+name:                zero-bullshit
 version:             0.1.0.0
 github:              "alpacaaa/zero-haskell"
 license:             BSD3
@@ -9,7 +9,7 @@ copyright:           "2019 Marco Sampellegrini"
 
 ghc-options:
   - -Wall
-  # - -Werror
+  - -Werror
 
 # Metadata used when publishing your package
 synopsis:            A simple and mildly useful webserver library.

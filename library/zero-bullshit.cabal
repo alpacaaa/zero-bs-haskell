@@ -4,9 +4,9 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9ef340270fd311f3f7eaa31a46d414271e29e0230a0e3deef28d0bae88e5a34b
+-- hash: 62a642cd77ed65ba06f03271c0c744480f83a45f192f4af4a42c2eb302fcd6e4
 
-name:           zero-bs
+name:           zero-bullshit
 version:        0.1.0.0
 synopsis:       A simple and mildly useful webserver library.
 description:    Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
@@ -27,10 +27,10 @@ library
   exposed-modules:
       Zero.Server
   other-modules:
-      Paths_zero_bs
+      Paths_zero_bullshit
   hs-source-dirs:
       src
-  ghc-options: -Wall
+  ghc-options: -Wall -Werror
   build-depends:
       aeson
     , base >=4.11 && <5
