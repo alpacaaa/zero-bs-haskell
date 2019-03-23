@@ -1,5 +1,5 @@
 .stack-work/
-request-response.cabal
+*.cabal
 *~
 .DS_Store
 node_modules/
