@@ -2,6 +2,4 @@
 
 set -ex
 
-cd exercises
-
 npx browserify test-runner-browser.js -o bundle.js

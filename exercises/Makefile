@@ -1,9 +1,9 @@
 
-run-integration-tests:
-	./run-tests
+run-tests:
+	cd test && ./run-tests
 
 bundle-frontend:
-	bundle-frontend && python -m SimpleHTTPServer 8800
+	cd test && ./bundle-frontend && python -m SimpleHTTPServer 8800
 
 generate-docs:
 	# stack exec -- haddock --html --hyperlinked-source src/Zero/Server.hs --odir docs

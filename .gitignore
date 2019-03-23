@@ -3,7 +3,7 @@
 *~
 .DS_Store
 node_modules/
-exercises/bundle.js
+bundle.js
 dist/
 dist-newstyle/
 .ghc.environment*

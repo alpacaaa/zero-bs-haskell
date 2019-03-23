@@ -5,10 +5,10 @@ const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 const should = chai.should()
 
-const Ex01 = require('./src/Ex01StaticString/test.js')
-const Ex02 = require('./src/Ex02Echo/test.js')
-const Ex03 = require('./src/Ex03CaseMatch/test.js')
-const Ex04 = require('./src/Ex04StringManipulation/test.js')
+const Ex01 = require('../src/Ex01StaticString/test.js')
+const Ex02 = require('../src/Ex02Echo/test.js')
+const Ex03 = require('../src/Ex03CaseMatch/test.js')
+const Ex04 = require('../src/Ex04StringManipulation/test.js')
 
 //const exercise = process.env.EXERCISE
 
