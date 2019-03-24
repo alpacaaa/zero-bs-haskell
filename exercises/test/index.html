@@ -6,11 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
     <style>
-      .run-btn { padding: 1em; border: 1px solid #ddd; display: inline-block; }
+      * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; }
+      p { margin-bottom: 1em; }
+      a { color: #0066CC; }
+      .container { width: 90%; max-width: 50em; margin: 1.5em auto; }
+      section { margin: 3em 0; }
+      .logo { max-width: 10em; }
+      code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
+      .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; }
+      .run-btn:hover { background: #eee; }
     </style>
   </head>
   <body>
-    <div class="run-btn" onClick="mocha.run()">Run exercises</div>
+    <main class="container">
+      <section>
+        <img src="logo-wide.png" class="logo" />
+        <h3>Exercise #01 - Static string</h3>
+        <p>
+          Write a server that exposes a <code>/hello</code> route.<br>
+          <code>GET /hello</code> should return <code>hello</code>.
+        </p>
+      </section>
+      <button class="run-btn" onClick="mocha.run()">Run exercises</button>
+    </main>
     <div id="mocha"></div>
 
     <script src="https://unpkg.com/chai/chai.js"></script>
