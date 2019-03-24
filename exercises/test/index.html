@@ -5,41 +5,66 @@
     <title>Zero Bullshit</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css">
+
     <style>
-      * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; }
-      p { margin-bottom: 1em; }
+      * { box-sizing: border-box; }
+      html, body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; margin: 0; }
+      p { margin: 0 0 1em; }
       a { color: #0066CC; }
       .container { width: 90%; max-width: 50em; margin: 1.5em auto; }
       section { margin: 3em 0; }
-      .logo { max-width: 10em; }
+      .logo { max-width: 10em; margin-bottom: 1.5em; }
+
+      h4 { margin: 0; }
+      pre[class*=language-] { padding: 0 1em; }
       code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
-      .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; }
+
+      .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; font-size: 1em; }
       .run-btn:hover { background: #0066CC; color: #fff; }
       .refresh-notice { display: none; background: #eee; padding: 1em; font-style: italic; color: #666; }
 
       .test-running .run-btn { display: none;}
       .test-running .refresh-notice { display: block; }
+
+      #mocha { margin: 0 0 1.5em; }
     </style>
   </head>
   <body>
     <main class="container">
       <section>
         <img src="logo-wide.png" class="logo" />
-        <h3>Exercise #01 - Static string</h3>
+        <h2>Exercise #01 - Static string</h2>
         <p>
           Write a server that exposes a <code>/hello</code> route.<br>
           <code>GET /hello</code> should return <code>hello</code>.
         </p>
       </section>
-      <button class="run-btn" onClick="runTests()">Run tests</button>
-    </main>
-    <div id="mocha"></div>
 
-    <div class="container">
+      <button class="run-btn" onClick="runTests()">Run tests</button>
+
+      <div id="mocha"></div>
       <p class="refresh-notice">
         Refresh the page to run the tests again.
       </p>
-    </div>
+
+      <section>
+        <h4>Reference node.js implementation</h4>
+        <pre>
+          <code class="language-javascript">
+const app = require("express")()
+
+app.get("/hello", (req, res) => {
+  res.send("hello")
+})
+
+console.log("[ex1] Starting server...")
+app.listen(7879)
+          </code>
+        </pre>
+      </section>
+      
+    </main>
 
     <script src="https://unpkg.com/chai/chai.js"></script>
     <script src="https://unpkg.com/mocha/mocha.js"></script>
@@ -55,6 +80,8 @@
       }
     </script>
     <script src="bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js"></script>
 <!--     <script class="mocha-exec">
       mocha.run();
     </script> -->
