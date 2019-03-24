@@ -14,7 +14,11 @@
       .logo { max-width: 10em; }
       code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
       .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; }
-      .run-btn:hover { background: #eee; }
+      .run-btn:hover { background: #0066CC; color: #fff; }
+      .refresh-notice { display: none; background: #eee; padding: 1em; font-style: italic; color: #666; }
+
+      .test-running .run-btn { display: none;}
+      .test-running .refresh-notice { display: block; }
     </style>
   </head>
   <body>
@@ -27,9 +31,15 @@
           <code>GET /hello</code> should return <code>hello</code>.
         </p>
       </section>
-      <button class="run-btn" onClick="mocha.run()">Run exercises</button>
+      <button class="run-btn" onClick="runTests()">Run tests</button>
     </main>
     <div id="mocha"></div>
+
+    <div class="container">
+      <p class="refresh-notice">
+        Refresh the page to run the tests again.
+      </p>
+    </div>
 
     <script src="https://unpkg.com/chai/chai.js"></script>
     <script src="https://unpkg.com/mocha/mocha.js"></script>
@@ -38,6 +48,11 @@
     <script class="mocha-init">
       mocha.setup('bdd');
       mocha.checkLeaks();
+
+      function runTests() {
+        document.getElementsByTagName('html')[0].classList.add('test-running')
+        mocha.run()
+      }
     </script>
     <script src="bundle.js"></script>
 <!--     <script class="mocha-exec">
