@@ -10,8 +10,6 @@ const Ex02 = require('../src/Ex02Echo/test.js')
 const Ex03 = require('../src/Ex03CaseMatch/test.js')
 const Ex04 = require('../src/Ex04StringManipulation/test.js')
 
-//const exercise = process.env.EXERCISE
-
 const host = 'http://localhost:7879'
 
 const server = {
@@ -30,10 +28,10 @@ const server = {
 
 module.exports = (exercise) => {
   switch (exercise) {
-    case "1": return Ex01(server)
-    case "2": return Ex02(server)
-    case "3": return Ex03(server)
-    case "4": return Ex04(server)
+    case "01": return Ex01(server)
+    case "02": return Ex02(server)
+    case "03": return Ex03(server)
+    case "04": return Ex04(server)
     default:
       throw new Error(`Invalid exercise ${exercise}`)
   }

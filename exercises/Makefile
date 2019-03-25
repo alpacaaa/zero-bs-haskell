@@ -12,3 +12,6 @@ generate-docs:
 
 build-pedantic:
 	stack build --fast --pedantic
+
+sample:
+	JS=`cat ../src/Ex01StaticString/reference.js` gucci -f ../src/Ex01StaticString/data.yml template.html

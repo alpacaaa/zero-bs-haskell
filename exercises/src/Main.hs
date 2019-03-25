@@ -10,9 +10,9 @@ main :: IO ()
 main = do
   n <- System.Environment.getArgs
   case n of
-    ["1"] -> Ex01StaticString.StaticString.main
-    ["2"] -> Ex02Echo.Echo.main
-    ["3"] -> Ex03CaseMatch.CaseMatch.main
-    ["4"] -> Ex04StringManipulation.StringManipulation.main
-    _     ->
+    ["01"] -> Ex01StaticString.StaticString.main
+    ["02"] -> Ex02Echo.Echo.main
+    ["03"] -> Ex03CaseMatch.CaseMatch.main
+    ["04"] -> Ex04StringManipulation.StringManipulation.main
+    _      ->
       putStrLn "Invalid exercise number. Provide number as a cli argument."
