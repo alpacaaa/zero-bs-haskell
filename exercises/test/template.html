@@ -18,6 +18,7 @@
       h2 { margin: 0 0 0.5em; }
 
       h4 { margin: 0 0 .5em; }
+      pre { margin: 0; }
       pre[class*=language-] { padding: 0 1em; margin-bottom: 1.5em; }
       code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
 
@@ -34,7 +35,7 @@
   <body>
     <main class="container">
       <section>
-        <img src="logo-wide.png" class="logo" />
+        <img src="/logo-wide.png" class="logo" />
         <h2>Exercise #{{ .exercise }} - {{ .title }}</h2>
         {{ .intro }}
       </section>
@@ -80,9 +81,9 @@
         mocha.run()
       }
 
-      window.EXERCISE = {{ .exercise }}
+      window.EXERCISE = "{{ .exercise }}"
     </script>
-    <script src="bundle.js"></script>
+    <script src="/bundle.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js"></script>
   </body>

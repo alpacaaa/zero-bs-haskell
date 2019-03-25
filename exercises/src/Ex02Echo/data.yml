@@ -1,0 +1,12 @@
+exercise: "02"
+title: Echo
+intro: |
+  <p>
+    Write a server that exposes a <code>/echo</code> route.<br>
+    Return the body of the request as the response.
+    <pre>
+      POST /echo
+      some string
+    </pre>
+    should return <code>some string</code>.
+  </p>

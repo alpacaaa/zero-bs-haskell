@@ -2,5 +2,8 @@
 
 set -ex
 
+rm -rf dist
+mkdir dist
+
 npx browserify test-runner-browser.js -o dist/bundle.js
 node process-html.js

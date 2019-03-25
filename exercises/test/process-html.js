@@ -26,8 +26,11 @@ glob('../src/*/', (err, folders) => {
   if (err) throw err
 
   folders.forEach(exercise => {
-    html = buildHtml(exercise)
-    ex = exercise.split('src/').pop().substr(0, 4)
-    fs.writeFileSync(`dist/${ex}/index.html`, html)
+    const html = buildHtml(exercise)
+    const ex = exercise.split('src/').pop().substr(0, 4)
+    const dest = `dist/${ex}`
+
+    fs.mkdirSync(dest)
+    fs.writeFileSync(`${dest}/index.html`, html)
   })
 })

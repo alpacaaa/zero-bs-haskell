@@ -1,0 +1,7 @@
+exercise: "03"
+title: Case match
+intro: |
+  <p>
+    Write a server that exposes a <code>/hello</code> route.<br>
+    <code>GET /hello</code> should return <code>hello</code>.
+  </p>
