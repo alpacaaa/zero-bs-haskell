@@ -3,7 +3,8 @@
 *~
 .DS_Store
 node_modules/
-bundle.js
-dist/
+dist/*
 dist-newstyle/
 .ghc.environment*
+
+!dist/.gitkeep

@@ -2,4 +2,5 @@
 
 set -ex
 
-npx browserify test-runner-browser.js -o bundle.js
+npx browserify test-runner-browser.js -o dist/bundle.js
+node process-html.js

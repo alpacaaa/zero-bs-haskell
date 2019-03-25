@@ -1,5 +1,6 @@
 
 const fs = require('fs')
+const glob = require('glob')
 const YAML = require('yaml')
 
 const tpl = fs.readFileSync('template.html', 'utf-8')
@@ -21,6 +22,12 @@ const buildHtml = (exercise) => {
 }
 
 
-const exercise = '../src/Ex01StaticString/'
+glob('../src/*/', (err, folders) => {
+  if (err) throw err
 
-console.log(buildHtml(exercise))
+  folders.forEach(exercise => {
+    html = buildHtml(exercise)
+    ex = exercise.split('src/').pop().substr(0, 4)
+    fs.writeFileSync(`dist/${ex}/index.html`, html)
+  })
+})
