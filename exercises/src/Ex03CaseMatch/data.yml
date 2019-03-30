@@ -2,6 +2,18 @@ exercise: "03"
 title: Case match
 intro: |
   <p>
-    Write a server that exposes a <code>/hello</code> route.<br>
-    <code>GET /hello</code> should return <code>hello</code>.
+    Write a server that exposes a <code>/case</code> route.<br>
+    The body of the request is going to be a number (for example <code>3</code>)
+    which you should return "spelled out" (<code>three</code>)
+    <pre>
+      POST /case
+      1
+      >>> expected "one"
+
+      POST /case
+      2
+      >>> expected "two"
+    </pre>
+
+    Only cover numbers from 1 to 3.
   </p>

@@ -2,6 +2,19 @@ exercise: "04"
 title: String manipulation
 intro: |
   <p>
-    Write a server that exposes a <code>/hello</code> route.<br>
-    <code>GET /hello</code> should return <code>hello</code>.
+    Write a server that exposes a <code>/string-manipulation</code> route.<br>
+    The body of the response is going to be a statement, like <code>I think I could 
+    survive only on pizza.</code>. <br>
+    If the statement begins with <code>I'm positive</code>, it should be replaced
+    with the more conservative <code>I think</code> -- return the statement unchanged otherwise.
+
+    <pre>
+      POST /string-manipulation
+      I think I could survive only on pizza.
+      >>> expected "I think I could survive only on pizza."
+
+      POST /string-manipulation
+      I'm positive winter is the best season.
+      >>> expected "I think winter is the best season."
+    </pre>
   </p>
