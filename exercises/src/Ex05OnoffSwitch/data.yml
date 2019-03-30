@@ -1,0 +1,20 @@
+exercise: "05"
+title: On/Off switch
+intro: |
+  <p>
+    Write a server that exposes a <code>/onoff-switch</code> route.<br>
+    The server will maintain the state of a switch. The state can either be "Off" or "On".
+    The switch will start in the "Off" position. Everytime a request is sent, flip the
+    switch and return the current state.
+
+    <pre>
+      POST /onoff-switch
+      >>> expected "On"
+
+      POST /onoff-switch
+      >>> expected "Off"
+
+      POST /onoff-switch
+      >>> expected "On"
+    </pre>
+  </p>
