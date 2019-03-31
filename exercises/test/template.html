@@ -85,10 +85,9 @@
       mocha.setup('bdd');
       mocha.checkLeaks();
 
-      var html = document.getElementsByTagName('html')[0]
-
       function runTests() {
         html.classList.add('test-running')
+        clearInterval(checkInterval)
         mocha.run()
       }
 
@@ -101,7 +100,8 @@
         .catch(function() { html.classList.add('server-unreachable') })
       }
 
-      setInterval(checkServerReachable, 1000)
+      var html = document.getElementsByTagName('html')[0]
+      var checkInterval = setInterval(checkServerReachable, 1000)
 
       window.EXERCISE = "{{ .exercise }}"
     </script>

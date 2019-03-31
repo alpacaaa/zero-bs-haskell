@@ -10,6 +10,7 @@ const Ex02 = require('../src/Ex02Echo/test.js')
 const Ex03 = require('../src/Ex03CaseMatch/test.js')
 const Ex04 = require('../src/Ex04StringManipulation/test.js')
 const Ex05 = require('../src/Ex05OnoffSwitch/test.js')
+const Ex06 = require('../src/Ex06Counter/test.js')
 
 const host = 'http://localhost:7879'
 
@@ -34,6 +35,7 @@ module.exports = (exercise) => {
     case "03": return Ex03(server)
     case "04": return Ex04(server)
     case "05": return Ex05(server)
+    case "06": return Ex06(server)
     default:
       throw new Error(`Invalid exercise ${exercise}`)
   }

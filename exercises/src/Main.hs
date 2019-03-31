@@ -4,6 +4,7 @@ import qualified Ex02Echo.Echo
 import qualified Ex03CaseMatch.CaseMatch
 import qualified Ex04StringManipulation.StringManipulation
 import qualified Ex05OnoffSwitch.OnoffSwitch
+import qualified Ex06Counter.Counter
 
 import qualified System.Environment
 
@@ -16,5 +17,6 @@ main = do
     ["03"] -> Ex03CaseMatch.CaseMatch.main
     ["04"] -> Ex04StringManipulation.StringManipulation.main
     ["05"] -> Ex05OnoffSwitch.OnoffSwitch.main
+    ["06"] -> Ex06Counter.Counter.main
     _      ->
       putStrLn "Invalid exercise number. Provide number as a cli argument."

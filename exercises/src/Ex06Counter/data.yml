@@ -1,0 +1,31 @@
+exercise: "06"
+title: Counter
+intro: |
+  <p>
+    Write a server that exposes two routes:
+  </p>
+  <ul>
+    <li><code>GET  /current-count</code></li>
+    <li><code>POST /increase</code></li>
+  </ul>
+
+  <p>
+    Keep the state of a counter (starting from 0).
+    The counter can only be increased.
+
+    <pre>
+      GET /current-count
+      >>> expected 0
+
+      POST /increase
+
+      GET /current-count
+      >>> expected 1
+
+      POST /increase
+      POST /increase
+
+      GET /current-count
+      >>> expected 3
+    </pre>
+  </p>
