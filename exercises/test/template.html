@@ -24,10 +24,12 @@
 
       .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; font-size: 1em; }
       .run-btn:hover { background: #0066CC; color: #fff; }
-      .refresh-notice { display: none; background: #eee; padding: 1em; font-style: italic; color: #666; }
+
+      .msg { display: none; border-left: 5px solid #ffcc00; padding: .5em 1.5em; margin-bottom: 1.5em; }
 
       .test-running .run-btn { display: none;}
       .test-running .refresh-notice { display: block; }
+      .server-unreachable .server-down-notice { display: block; }
 
       #mocha { margin: 0 0 1.5em; }
     </style>
@@ -39,6 +41,13 @@
         <h2>Exercise #{{ .exercise }} - {{ .title }}</h2>
         {{ .intro }}
       </section>
+
+      <div class="msg server-down-notice">
+        It looks like your server isn't up. This page expects your Haskell application to be listineing on
+        <a href="http://localhost:7879">http://localhost:7879</a>. <br>
+        If you're unsure on how to proceed, read more on how to setup your 
+        <a href="google.com">Local dev environment</a> to complete the exercises.
+      </div>
 
       <button class="run-btn" onClick="runTests()">Run tests</button>
 
@@ -76,10 +85,23 @@
       mocha.setup('bdd');
       mocha.checkLeaks();
 
+      var html = document.getElementsByTagName('html')[0]
+
       function runTests() {
-        document.getElementsByTagName('html')[0].classList.add('test-running')
+        html.classList.add('test-running')
         mocha.run()
       }
+
+      function checkServerReachable() {
+        fetch('http://localhost:7879/__ping')
+        .then(res => {
+          var method = res.ok ? 'remove' : 'add'
+          html.classList.method('server-unreachable')
+        })
+        .catch(err => html.classList.add('server-unreachable'))
+      }
+
+      setInterval(checkServerReachable, 1000)
 
       window.EXERCISE = "{{ .exercise }}"
     </script>
