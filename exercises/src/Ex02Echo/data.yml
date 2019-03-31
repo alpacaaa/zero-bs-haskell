@@ -7,6 +7,10 @@ intro: |
     <pre>
       POST /echo
       some string
+      >>> expected "some string"
+
+      POST /echo
+      Show me your types and I'll tell you who you are
+      >>> expected "Show me your types and I'll tell you who you are"
     </pre>
-    should return <code>some string</code>.
   </p>

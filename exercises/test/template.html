@@ -53,7 +53,7 @@
 
       <div id="mocha"></div>
 
-      <p class="refresh-notice">
+      <p class="msg refresh-notice">
         Refresh the page to run the tests again.
       </p>
 
@@ -65,13 +65,13 @@
 
         <h4>Where to get help</h4>
         <p>
-          If you get stuck, join the discussion on Github (<a href="github.com">issue #12</a>). It might
+          Got stuck? Don't worry! Join the discussion on Github (<a href="github.com">issue #12</a>). It might
           be that the exercise could be clearer or there's something you really can't wrap your head around.
-          That's totally fine.
+          That's totally fine! 🙂
         </p>
         <p>
-          You can also have a look at <a href="github.com">my solution</a> although I strongly encourage you go through
-          the exercise by yourself. :)
+          You can also have a look at <a href="github.com">my solution</a>. No shame in having a peek. 🧐<br>
+          But do share your thoughts on the exercises, it would be really helpful!
         </p>
       </section>
       
@@ -94,11 +94,11 @@
 
       function checkServerReachable() {
         fetch('http://localhost:7879/__ping')
-        .then(res => {
+        .then(function(res) {
           var method = res.ok ? 'remove' : 'add'
-          html.classList.method('server-unreachable')
+          html.classList[method]('server-unreachable')
         })
-        .catch(err => html.classList.add('server-unreachable'))
+        .catch(function() { html.classList.add('server-unreachable') })
       }
 
       setInterval(checkServerReachable, 1000)
