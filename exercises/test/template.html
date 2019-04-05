@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Exercise #{{ .exercise }} - {{ .title }} | Zero Bullshit Haskell</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="//unpkg.com/mocha/mocha.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css">
 
     <style>
@@ -39,7 +39,7 @@
     <main class="container">
       <section>
         <a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises" class="logo">
-          <img src="../logo-wide.png" />
+          <img src="../logo-wide.png" alt="Zero Bullshit Haskell logo" />
         </a>
         <h2>Exercise #{{ .exercise }} - {{ .title }}</h2>
         {{ .intro }}
@@ -108,8 +108,8 @@
 
       window.EXERCISE = "{{ .exercise }}"
     </script>
-    <script src="/bundle.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.js"></script>
+    <script src="../bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js"></script>
   </body>
 </html>
