@@ -15,6 +15,7 @@ const buildHtml = (exercise) => {
 
   const content = YAML.parse(data)
   content.JS = fs.readFileSync(exercise + 'reference.js')
+  content.year = (new Date()).getFullYear()
 
   return Object.keys(content).reduce((acc, item) => {
     return replaceVar(item, content[item], acc)

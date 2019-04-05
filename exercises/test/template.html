@@ -33,6 +33,12 @@
       .server-unreachable .server-down-notice { display: block; }
 
       #mocha { margin: 0 0 1.5em; }
+
+      footer { margin: 3em 0; padding: 1.5em 0; border-top: 1px solid #ddd; font-size: 0.75em; }
+      footer ul { margin: 0; padding: 0; text-align: center; }
+      footer li { display: inline-block; }
+      footer li:after { content: ' ~'; padding: 0 0.5em; }
+      footer li:last-child:after { content: ''; }
     </style>
   </head>
   <body>
@@ -49,7 +55,8 @@
         It looks like your server isn't up. This page expects your Haskell application to be listineing on
         <a href="http://localhost:7879">http://localhost:7879</a>. <br>
         If you're unsure on how to proceed, read more on how to setup your 
-        <a href="google.com">Local dev environment</a> to complete the exercises.
+        <a href="https://github.com/alpacaaa/zero-bullshit-haskell#toc-solve-exercise">Local dev environment</a>
+        to complete the exercises.
       </div>
 
       <button class="run-btn" onClick="runTests()">Run tests</button>
@@ -73,10 +80,19 @@
           That's totally fine! 🙂
         </p>
         <p>
-          You can also have a look at <a href="github.com">my solution</a>. No shame in having a peek. 🧐<br>
+          You can also have a look at <a href="https://github.com/alpacaaa/zero-bullshit-haskell/blob/master/exercises/src/{{ .solution }}">my solution</a>. No shame in having a peek. 🧐<br>
           But do share your thoughts on the exercises, it would be really helpful!
         </p>
       </section>
+
+      <footer>
+        <ul>
+          <li>{{ .year }}</li>
+          <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell">Zero Bullshit Haskell</a></li>
+          <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises">Exercises</a></li>
+          <li><a href="https://alpacaaa.net/zero-bullshit-haskell/docs">Docs</a></li>
+        </ul>
+      </footer>
       
     </main>
 

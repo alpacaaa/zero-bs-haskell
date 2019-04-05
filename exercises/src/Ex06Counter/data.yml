@@ -1,5 +1,6 @@
 exercise: "06"
 title: Counter
+solution: Ex06Counter/Counter.hs
 intro: |
   <p>
     Write a server that exposes two routes:

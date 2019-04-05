@@ -1,5 +1,6 @@
 exercise: "04"
 title: String manipulation
+solution: Ex04StringManipulation/StringManipulation.hs
 intro: |
   <p>
     Write a server that exposes a <code>/string-manipulation</code> route.<br>
