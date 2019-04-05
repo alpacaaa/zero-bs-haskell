@@ -14,7 +14,8 @@
       a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
       .container { width: 90%; max-width: 50em; margin: 1.5em auto; }
       section { margin: 3em 0; }
-      .logo { max-width: 10em; margin-bottom: 3em; }
+      .logo { border: 0 none; }
+      .logo img { max-width: 10em; margin-bottom: 3em; }
       h2 { margin: 0 0 0.5em; }
 
       h4 { margin: 0 0 .5em; }
@@ -37,7 +38,9 @@
   <body>
     <main class="container">
       <section>
-        <img src="../logo-wide.png" class="logo" />
+        <a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises" class="logo">
+          <img src="../logo-wide.png" />
+        </a>
         <h2>Exercise #{{ .exercise }} - {{ .title }}</h2>
         {{ .intro }}
       </section>
