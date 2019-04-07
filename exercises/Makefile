@@ -24,6 +24,7 @@ deploy:
 	&& cd ../library \
 	&& cp -R `stack path --local-doc-root`/zero-bullshit-0.1.0.0 ../exercises/test/dist/docs \
 	&& cd .. \
+	&& node exercises/test/fix-hackage-links.js \
 	&& cp -R exercises/test/dist/ alpacaaa.github.io/zero-bullshit-haskell/ \
 	&& cd alpacaaa.github.io \
 	&& git add zero-bullshit-haskell \

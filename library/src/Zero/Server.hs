@@ -5,6 +5,10 @@
 --
 -- Use this library to complete the
 -- <https://github.com/alpacaaa/zero-bullshit-haskell#exercises Zero Bullshit Haskell exercises>.
+--
+-- If you're unsure on how to proceed, read more on how to setup your
+-- <https://github.com/alpacaaa/zero-bullshit-haskell#toc-solve-exercise Local dev environment>
+-- to complete the exercises.
 module Zero.Server
   (
   -- * Server
