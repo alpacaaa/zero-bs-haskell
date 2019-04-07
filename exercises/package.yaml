@@ -23,6 +23,11 @@ dependencies:
 - base
 - zero-bullshit
 
+default-extensions:
+- OverloadedStrings
+- DeriveGeneric
+- DeriveAnyClass
+
 executables:
   exercises:
     main:                Main.hs
