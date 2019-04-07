@@ -366,9 +366,10 @@ startServer
   = startServerOnPort 7879
 
 
--- | How do I turn a JSON value into a type @a@?
+-- | How do I turn a JSON value into a value of type @a@?
 --
 --   Your type needs a `FromJSON` instance, which you can derive automatically.
+--
 --   (That's why you need the `Generic` thing, but feel free to ignore, it's not important)
 --
 -- > import GHC.Generics (Generic)
@@ -393,4 +394,25 @@ startServer
 -- >           Right p  -> "Yay! We have a person named: " <> (name p)
 type FromJSON a = (Aeson.FromJSON a)
 
+-- | How do I send a JSON response?
+--
+--   Your type needs a `ToJSON` instance, which you can derive automatically.
+--   (That's why you need the `Generic` thing, but feel free to ignore, it's not important)
+--
+-- > import GHC.Generics (Generic)
+-- > import qualified Zero.Server as Server
+-- >
+-- > data Person
+-- >   = Person { name :: String, age :: Int }
+-- > deriving (Generic, Server.ToJSON)
+--
+-- Then you want to use `jsonResponse` to produce a `Response` that contains the JSON
+-- representation of your type. Note that __encoding to JSON cannot fail__, while parsing
+-- from JSON could potentially fail if the JSON input is malformed.
+--
+-- > myHandler :: Request -> Response
+-- > myHandler req
+-- >   = jsonResponse p
+-- >   where
+-- >     p = Person "bob" 69
 type ToJSON a = (Aeson.ToJSON a)
