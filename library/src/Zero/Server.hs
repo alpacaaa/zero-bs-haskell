@@ -1,7 +1,7 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
--- | A very simple webserver library inspired by Sinatra, Express.js and the likes.
+-- | A very simple webserver library inspired by @express.js@, @sinatra@.and the likes.
 --
 -- Use this library to complete the
 -- <https://github.com/alpacaaa/zero-bullshit-haskell#exercises Zero Bullshit Haskell exercises>.
@@ -343,7 +343,7 @@ startServerOnPort port serverDef = do
 
 -- | Start the server on port @7879@.
 --
---   As an example, this is a server that listens to @/hello@ and @/ping@ requests.
+--   As an example, this is a server that exposes @/hello@ and @/ping@ routes.
 --
 -- > helloHandler :: Handler
 -- > helloHandler

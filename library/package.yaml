@@ -11,14 +11,14 @@ ghc-options:
   - -Wall
   - -Werror
 
-# Metadata used when publishing your package
 synopsis:            A simple and mildly useful webserver library.
 category:            Web
 
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
+description: |
+  This Haskell package provides a very simple webserver implementation similar to @express.js@ or @sinatra@.
+
+  It comes as part of the <https://github.com/alpacaaa/zero-bullshit-haskell Zero Bullshit Haskell> project,
+  where you can learn Haskell with hands on exercises and bullshit free explanations!
 
 dependencies:
 - aeson
