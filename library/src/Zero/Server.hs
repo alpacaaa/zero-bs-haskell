@@ -1,7 +1,7 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
--- | A very simple webserver library inspired by @express.js@, @sinatra@.and the likes.
+-- | A very simple webserver library inspired by @express.js@, @sinatra@ and the likes.
 --
 -- Use this library to complete the
 -- <https://github.com/alpacaaa/zero-bullshit-haskell#exercises Zero Bullshit Haskell exercises>.
@@ -13,6 +13,7 @@ module Zero.Server
   (
   -- * Server
     startServer
+  -- , startServerOnPort is this ever useful?
   , Handler
   , Method (..)
   , simpleHandler
@@ -28,14 +29,12 @@ module Zero.Server
   , jsonResponse
   , failureResponse
 
-  -- * Advanced stuff
+  -- * State and side effects
   , effectfulHandler
 
   , StatefulHandler
   , statefulHandler
   , handlersWithState
-
-  , startServerOnPort
 
   -- * JSON encoding/decoding
   , ToJSON
@@ -130,8 +129,8 @@ handleResponse path req res = do
 
 -- | Given a `String`, either succesfully parse it to a type `a`
 -- or return an error (as a `String`).
--- It's very important for the compiler to know what the `a` type is.
--- If you're having problem with `Ambiguous occurrence...`, read TODO.
+--
+-- Read the documentation for `FromJSON` for a practical example.
 decodeJson :: FromJSON a => String -> Either String a
 decodeJson input
   = Aeson.eitherDecode' (toLazy $ Text.pack input)
@@ -245,8 +244,7 @@ effectfulHandler method path toResponse
 --
 --   Compare it with the simpler @Request -> Response@. The difference is that you get
 --   the current state as a parameter, and you no longer return __just__ the @Response@,
---   but an updated version of the state as well. For a more in depth explanation,
---   read TODO.
+--   but an updated version of the state as well.
 statefulHandler
   :: Method
   -> String
@@ -363,8 +361,8 @@ startServerOnPort port serverDef = do
 -- pong
 --
 --   The server will listen on port @7879@. If you're following along with the
---   exercises, they expect to find a server running on that port. In other words,
---   you are good to go!
+--   exercises, the integration tests expect to find a server running on that
+--   port. In other words, you are good to go!
 startServer :: [Handler] -> IO ()
 startServer
   = startServerOnPort 7879
@@ -384,7 +382,7 @@ startServer
 -- > deriving (Generic, Server.FromJSON)
 --
 -- Then you want to use `decodeJson` to either get an error (when the JSON is invalid)
--- or a value of type `Person`
+-- or a value of type `Person`.
 --
 -- > myHandler :: Request -> Response
 -- > myHandler req
