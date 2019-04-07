@@ -1,7 +1,10 @@
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 -- | A very simple webserver library inspired by Sinatra, Express.js and the likes.
 --
+-- Use this library to complete the
+-- <https://github.com/alpacaaa/zero-bullshit-haskell#exercises Zero Bullshit Haskell exercises>.
 module Zero.Server
   (
   -- * Server
@@ -29,11 +32,14 @@ module Zero.Server
   , handlersWithState
 
   , startServerOnPort
+
+  -- * JSON encoding/decoding
+  , ToJSON
+  , FromJSON
   ) where
 
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 
 import qualified Control.Concurrent.STM as STM
@@ -45,6 +51,7 @@ import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.HTTP.Types as HTTP.Types
 import qualified Network.Wai.Middleware.Cors as Cors
 import qualified Web.Scotty as Scotty
+
 
 -- import qualified Debug.Trace as Debug
 
@@ -357,3 +364,33 @@ startServerOnPort port serverDef = do
 startServer :: [Handler] -> IO ()
 startServer
   = startServerOnPort 7879
+
+
+-- | How do I turn a JSON value into a type @a@?
+--
+--   Your type needs a `FromJSON` instance, which you can derive automatically.
+--   (That's why you need the `Generic` thing, but feel free to ignore, it's not important)
+--
+-- > import GHC.Generics (Generic)
+-- > import qualified Zero.Server as Server
+-- >
+-- > data Person
+-- >   = Person { name :: String, age :: Int }
+-- > deriving (Generic, Server.FromJSON)
+--
+-- Then you want to use `decodeJson` to either get an error (when the JSON is invalid)
+-- or a value of type `Person`
+--
+-- > myHandler :: Request -> Response
+-- > myHandler req
+-- >   = stringResponse result
+-- >   where
+-- >     body
+-- >       = requestBody req
+-- >     result
+-- >       = case decodeJson body of
+-- >           Left err -> "Failed to decode request body as a Person. It must be something else"
+-- >           Right p  -> "Yay! We have a person named: " <> (name p)
+type FromJSON a = (Aeson.FromJSON a)
+
+type ToJSON a = (Aeson.ToJSON a)
