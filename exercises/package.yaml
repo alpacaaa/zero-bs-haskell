@@ -20,6 +20,7 @@ category:            Web
 description:         Please see the README on GitHub at <https://github.com/alpacaaa/zero-haskell#readme>
 
 dependencies:
+- aeson
 - base
 - zero-bullshit
 

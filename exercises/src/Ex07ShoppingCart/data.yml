@@ -1,0 +1,34 @@
+exercise: "07"
+title: ShoppingCart
+solution: Ex07ShoppingCart/ShoppingCart.hs
+intro: |
+  <p>
+    Write a server that exposes two routes:
+  </p>
+  <ul>
+    <li><code>GET  /cart</code></li>
+    <li><code>POST /cart</code></li>
+  </ul>
+
+  <p>
+    Keep the state of a counter (starting from 0).
+    The counter can only be increased.
+
+    <pre>
+      GET /current-count
+      >>> expected 0
+
+      POST /increase
+
+      GET /current-count
+      >>> expected 1
+
+      POST /increase
+      POST /increase
+
+      GET /current-count
+      >>> expected 3
+    </pre>
+
+    Don't worry about the same item getting added twice for now.
+  </p>
