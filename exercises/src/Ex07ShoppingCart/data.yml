@@ -3,32 +3,43 @@ title: ShoppingCart
 solution: Ex07ShoppingCart/ShoppingCart.hs
 intro: |
   <p>
-    Write a server that exposes two routes:
+    Write a server that manages a shopping cart.<br>
+    This is the first exercise that involves JSON. Items in the cart
+    will look like <code>{ "model": "something", "quantity": 10 }</code>.
   </p>
+  <p>
+    A cart is just a list of items. Items are appended at the end of the cart.<br>
+    Only adding items is supported. Expose two routes:
+  </>
   <ul>
     <li><code>GET  /cart</code></li>
     <li><code>POST /cart</code></li>
   </ul>
 
   <p>
-    Keep the state of a counter (starting from 0).
-    The counter can only be increased.
+    The cart starts empty. Don't worry about the same item getting added twice for now.
 
     <pre>
-      GET /current-count
-      >>> expected 0
+      GET /cart
+      >>> expected []
 
-      POST /increase
+      POST /cart
+      { "model": "first thing", "quantity": 2 }
 
-      GET /current-count
-      >>> expected 1
+      GET /cart
+      >>> expected
+        [
+          { "model": "first thing", "quantity": 2 }
+        ]
 
-      POST /increase
-      POST /increase
+      POST /cart
+      { "model": "another thing", "quantity": 30 }
 
-      GET /current-count
-      >>> expected 3
+      GET /cart
+      >>> expected
+        [
+          { "model": "first thing", "quantity": 2 },
+          { "model": "another thing", "quantity": 30 }
+        ]
     </pre>
-
-    Don't worry about the same item getting added twice for now.
   </p>
