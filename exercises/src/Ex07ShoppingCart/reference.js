@@ -12,7 +12,7 @@ app.post("/cart", (req, res) => {
 
   if (item.model && item.quantity)
   {
-    currentCart.push(req.body)
+    currentCart.push(item)
     res.send("ok")
   }
   else {
