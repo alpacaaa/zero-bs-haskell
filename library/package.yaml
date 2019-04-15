@@ -1,6 +1,6 @@
 name:                zero-bullshit
 version:             0.1.0.0
-github:              "alpacaaa/zero-haskell"
+github:              "alpacaaa/zero-bullshit-haskell"
 license:             BSD3
 author:              "Marco Sampellegrini"
 maintainer:          "babbonatale@alpcaaa.net"
@@ -19,6 +19,24 @@ description: |
 
   It comes as part of the <https://github.com/alpacaaa/zero-bullshit-haskell Zero Bullshit Haskell> project,
   where you can learn Haskell with hands on exercises and bullshit free explanations!
+
+  To install this package, add it as an external dependency in your @stack.yaml@ (it's not on Hackage yet).
+
+  > # stack.yaml
+  >
+  > extra-deps:
+  > - github: alpacaaa/zero-bullshit-haskell
+  >   commit: master
+  >   subdirs:
+  >     - library
+
+  And then add @zero-bullshit@ as a dependency in @package.yaml@.
+
+  > # package.yaml
+  >
+  > dependencies:
+  > - base
+  > - zero-bullshit
 
 dependencies:
 - aeson
