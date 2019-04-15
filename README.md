@@ -1,4 +1,4 @@
-![Zero Bullshit Haskell](logo.png)
+![Zero Bullshit Haskell](exercises/test/logo.png)
 
 
 
