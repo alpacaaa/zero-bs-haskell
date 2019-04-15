@@ -1,6 +1,7 @@
 exercise: "05"
 title: On/Off switch
 solution: Ex05OnoffSwitch/OnoffSwitch.hs
+issue: 5
 intro: |
   <p>
     Write a server that exposes a <code>/onoff-switch</code> route.<br>

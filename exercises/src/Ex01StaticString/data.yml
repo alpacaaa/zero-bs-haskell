@@ -1,6 +1,7 @@
 exercise: "01"
 title: Static String
 solution: Ex01StaticString/StaticString.hs
+issue: 1
 intro: |
   <p>
     Write a server that exposes a <code>/hello</code> route.<br>

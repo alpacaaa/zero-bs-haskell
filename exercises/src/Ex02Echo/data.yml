@@ -1,6 +1,7 @@
 exercise: "02"
 title: Echo
 solution: Ex02Echo/Echo.hs
+issue: 2
 intro: |
   <p>
     Write a server that exposes a <code>/echo</code> route.<br>
