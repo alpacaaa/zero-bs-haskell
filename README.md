@@ -81,9 +81,9 @@ All the nasty and scary jargon is pushed as further as possible and presented on
 
 Exercises revolve around creating a webserver. It can be a very very simple webserver that just outputs `hello`, all the way to a concrete REST api that can handle state and connect to external services. We'll get there.
 
-You can fiddle with the exercises with very little effort, as they come with a test runner that runs in the browser and hits `http://localhost:7879` — where your Haskell server will be listening. That's right, no need to install any extra bullshit. All you need to do is go to the exercises website and start firing some AJAX requests. Read [Project setup and solving exercises]().
+You can fiddle with the exercises with very little effort, as they come with a test runner that runs in the browser and hits `http://localhost:7879` — where your Haskell server will be listening. That's right, no need to install any extra bullshit. All you need to do is go to the exercises website and start firing some AJAX requests. Read [Local dev environment and first exercise](#toc-solve-exercise).
 
-Perhpaps most importantly, all exercises have a **reference node.js implementation**. We'll discuss how each exercise could be solved using `express`, what the pitfalls of that implementation might be and how functional programming can help us in writing more robust code. Have a peak at [Exercise #01]() to get an idea of how it works.
+Perhpaps most importantly, all exercises have a **reference node.js implementation**. We'll discuss how each exercise could be solved using `express`, what the pitfalls of that implementation might be and how functional programming can help us in writing more robust code. Have a peak at [Exercise #01](https://alpacaaa.net/zero-bullshit-haskell/Ex01) to get an idea of how it works.
 
 We're going to be using a Haskell [library](https://alpacaaa.net/zero-bullshit-haskell/docs) that is very similar in spirit and simplicity to `express`. In fact, I wrote it specifically for this project and I made sure it's devoid of any bullshit whatsoever. It's not production ready of course — we will transition to a more robust and widely used library later on.
 
@@ -296,7 +296,7 @@ Let's now take a peek at the first exercise.
 
 [Exercise #01 - Static String](https://alpacaaa.net/zero-bullshit-haskell/Ex01)
 
-I built all exercises so that they have an integration test that you can run straight from your browser. Head over to the [Ex01 tests]() page to see the `mocha` test runner ready to go. When you run the tests, they will hit `localhost:7879` which is where your server is going to be listening.
+I built all exercises so that they have an integration test that you can run straight from your browser. Head over to the [Exercise #01](https://alpacaaa.net/zero-bullshit-haskell/Ex01) page to see the `mocha` test runner ready to go. When you run the tests, they will hit `localhost:7879` which is where your server is going to be listening.
 
 Obviously we have nothing running locally yet, so you should see a message saying that your server isn't running.
 
