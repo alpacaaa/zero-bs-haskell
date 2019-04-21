@@ -288,7 +288,7 @@ handlersWithState initialState handlers
 startServerOnPort :: Int -> [Handler] -> IO ()
 startServerOnPort port serverDef = do
   logInfo ""
-  logInfo "Zero Haskell server"
+  logInfo "Zero Bullshit Haskell server"
   logInfo "Ready to smash"
   logInfo ""
 

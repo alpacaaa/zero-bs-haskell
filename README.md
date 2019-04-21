@@ -741,5 +741,5 @@ myHandler req
 
 
 
-The first few Zero Haskell Bullshit exercises don't deal with JSON at all, but given that exercises are about writing webservers, then you need to understand how to work with JSON. [Exercise #07](https://alpacaaa.net/zero-bullshit-haskell/Ex07) is all about putting what we just discussed into practice. If something isn't clear, join the discussion in the relevant issue!
+The first few Zero Bullshit Haskell exercises don't deal with JSON at all, but given that exercises are about writing webservers, then you need to understand how to work with JSON. [Exercise #07](https://alpacaaa.net/zero-bullshit-haskell/Ex07) is all about putting what we just discussed into practice. If something isn't clear, join the discussion in the relevant issue!
 
