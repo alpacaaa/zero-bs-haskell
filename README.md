@@ -122,7 +122,7 @@ You can think of `stack` as `npm` or `yarn` — it's effectively solving a lot o
 
 ### <a id="toc-word-cabal"></a>A word on `cabal`
 
-There was a time when `stack` didn't exist and people used a tool called `cabal`. Thoese people experienced the so called _cabal hell_ and eventually created `stack` out of frustration. Recently, `cabal` has gotten a make over and it has gained back some of its original userbase.
+There was a time when `stack` didn't exist and people used a tool called `cabal`. Those people experienced the so called _cabal hell_ and eventually created `stack` out of frustration. Recently, `cabal` has gotten a make over and it has gained back some of its original userbase.
 
 Given that we have no idea what we're doing, we'll stick with `stack` because there is really nothing wrong with it and works great for what we need to accomplish here.
 
