@@ -4,6 +4,11 @@
 
 Let's learn Haskell. For real this time. :rocket:
 
+##### Quick links
+
+- [Youtube Channel](https://www.youtube.com/channel/UCJiwOqQi88UZCe8w7lwV4gw)
+- [`zero-bullshit` Documentation](https://alpacaaa.net/zero-bullshit-haskell/docs/)
+
 &nbsp;
 
 
