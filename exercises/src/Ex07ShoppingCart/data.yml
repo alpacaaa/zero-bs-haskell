@@ -1,6 +1,7 @@
 exercise: "07"
 title: ShoppingCart
 solution: Ex07ShoppingCart/ShoppingCart.hs
+issue: 7
 intro: |
   <p>
     Write a server that manages a shopping cart.<br>
