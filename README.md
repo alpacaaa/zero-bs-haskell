@@ -360,7 +360,7 @@ That's right, the test runner has detected that our server is up and it's ready 
 
 The test is making a `GET` request to `/hello` and is expecting a response with body `hello`. That shouldn't be too hard to implement. The main ingredients are `simpleHandler` and `stringResponse`.
 
-**I highly encourage you to watch the video where I go through this** ([link  will be here, doesn't exist yet](https://www.youtube.com/watch?v=dQw4w9WgXcQ)) to understand what's going on. I'm pasting the solution here for reference (you'll find solution for other exercises linked in each exercise page).
+**I highly encourage you to [watch the video](https://www.youtube.com/watch?v=Agp0qP96780) where I go through this** to understand what's going on. I'm pasting the solution here for reference (you'll find solution for other exercises linked in each exercise page).
 
 ```haskell
 helloHandler :: Server.Request -> Server.Response
