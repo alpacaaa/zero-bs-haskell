@@ -22,6 +22,7 @@ description:         Please see the README on GitHub at <https://github.com/alpa
 dependencies:
 - aeson
 - base
+- containers
 - zero-bullshit
 
 default-extensions:

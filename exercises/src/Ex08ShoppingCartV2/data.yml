@@ -1,0 +1,58 @@
+exercise: "08"
+title: ShoppingCart V2
+solution: Ex08ShoppingCartV2/ShoppingCartV2.hs
+issue: 7
+intro: |
+  <p>
+    <em>Continues from <a href="./Ex07">Exercise #07</a></em>.<br>
+    Items can now be added multiple times. If the item is in the cart already,
+    add the existing quantity to the new item's quantity.
+  </p>
+  <p>
+    Expose the same two routes, but return items <strong>ordered by quantity</strong>,
+    from highest to lowest.
+  </>
+  <ul>
+    <li><code>GET  /cart</code></li>
+    <li><code>POST /cart</code></li>
+  </ul>
+
+  <p>
+    The cart starts empty. Note how the order of the returned items changes
+    as more items are added.
+
+    <pre>
+      GET /cart
+      >>> expected []
+
+      POST /cart
+      { "model": "first thing", "quantity": 2 }
+
+      GET /cart
+      >>> expected
+        [
+          { "model": "first thing", "quantity": 2 }
+        ]
+
+      POST /cart
+      { "model": "another thing", "quantity": 30 }
+
+      GET /cart
+      >>> expected
+        [
+          { "model": "another thing", "quantity": 30 },
+          { "model": "first thing", "quantity": 2 }
+        ]
+
+      POST /cart
+      { "model": "first thing", "quantity": 45 }
+
+      GET /cart
+      >>> expected
+        [
+          { "model": "first thing", "quantity": 47 },
+          { "model": "another thing", "quantity": 30 }
+        ]
+
+    </pre>
+  </p>

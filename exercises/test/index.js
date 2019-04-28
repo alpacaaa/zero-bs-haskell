@@ -16,5 +16,6 @@ switch (n) {
   case "05": return require('../src/Ex05OnoffSwitch/reference.js')
   case "06": return require('../src/Ex06Counter/reference.js')
   case "07": return require('../src/Ex07ShoppingCart/reference.js')
+  case "08": return require('../src/Ex08ShoppingCartV2/reference.js')
   default: fail()
 }
