@@ -379,7 +379,7 @@ startServer
 -- >
 -- > data Person
 -- >   = Person { name :: String, age :: Int }
--- > deriving (Generic, Server.FromJSON)
+-- >   deriving (Generic, Server.FromJSON)
 --
 -- Then you want to use `decodeJson` to either get an error (when the JSON is invalid)
 -- or a value of type `Person`.
@@ -406,7 +406,7 @@ type FromJSON a = (Aeson.FromJSON a)
 -- >
 -- > data Person
 -- >   = Person { name :: String, age :: Int }
--- > deriving (Generic, Server.ToJSON)
+-- >   deriving (Generic, Server.ToJSON)
 --
 -- Then you want to use `jsonResponse` to produce a `Response` that contains the JSON
 -- representation of your type. Note that __encoding to JSON cannot fail__, while parsing
