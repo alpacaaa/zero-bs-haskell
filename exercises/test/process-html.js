@@ -2,6 +2,7 @@
 const fs = require('fs')
 const glob = require('glob')
 const YAML = require('yaml')
+const Mustache = require('mustache')
 
 const tpl = fs.readFileSync('template.html', 'utf-8')
 
@@ -17,9 +18,7 @@ const buildHtml = (exercise) => {
   content.JS = fs.readFileSync(exercise + 'reference.js')
   content.year = (new Date()).getFullYear()
 
-  return Object.keys(content).reduce((acc, item) => {
-    return replaceVar(item, content[item], acc)
-  }, tpl)
+  return Mustache.render(tpl, content)
 }
 
 

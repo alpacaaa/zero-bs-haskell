@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Exercise #{{ .exercise }} - {{ .title }} | Zero Bullshit Haskell</title>
+    <title>Exercise #{{ exercise }} - {{ title }} | Zero Bullshit Haskell</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="//unpkg.com/mocha/mocha.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css">
@@ -47,8 +47,8 @@
         <a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises" class="logo">
           <img src="../logo-wide.png" alt="Zero Bullshit Haskell logo" />
         </a>
-        <h2>Exercise #{{ .exercise }} - {{ .title }}</h2>
-        {{ .intro }}
+        <h2>Exercise #{{ exercise }} - {{ title }}</h2>
+        {{{ intro }}}
       </section>
 
       <div class="msg server-down-notice">
@@ -70,24 +70,24 @@
       <section>
         <h4>Reference node.js implementation</h4>
         <pre>
-          <code class="language-javascript">{{ .JS }}</code>
+          <code class="language-javascript">{{{ JS }}}</code>
         </pre>
 
         <h4>Where to get help</h4>
         <p>
-          Got stuck? Don't worry! Join the discussion on Github (<a href="https://github.com/alpacaaa/zero-bullshit-haskell/issues/{{ .issue }}">issue #{{ .issue }}</a>). It might
+          Got stuck? Don't worry! Join the discussion on Github (<a href="https://github.com/alpacaaa/zero-bullshit-haskell/issues/{{ issue }}">issue #{{ issue }}</a>). It might
           be that the exercise could be clearer or there's something you really can't wrap your head around.
           That's totally fine! 🙂
         </p>
         <p>
-          You can also have a look at <a href="https://github.com/alpacaaa/zero-bullshit-haskell/blob/master/exercises/src/{{ .solution }}">my solution</a>. No shame in having a peek. 🧐<br>
+          You can also have a look at <a href="https://github.com/alpacaaa/zero-bullshit-haskell/blob/master/exercises/src/{{ solution }}">my solution</a>. No shame in having a peek. 🧐<br>
           But do share your thoughts on the exercises, it would be really helpful!
         </p>
       </section>
 
       <footer>
         <ul>
-          <li>{{ .year }}</li>
+          <li>{{ year }}</li>
           <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell">Zero Bullshit Haskell</a></li>
           <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises">Exercises</a></li>
           <li><a href="https://alpacaaa.net/zero-bullshit-haskell/docs">Docs</a></li>
@@ -123,7 +123,7 @@
       var html = document.getElementsByTagName('html')[0]
       var checkInterval = setInterval(checkServerReachable, 1000)
 
-      window.EXERCISE = "{{ .exercise }}"
+      window.EXERCISE = "{{ exercise }}"
     </script>
     <script src="../bundle.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.min.js"></script>
