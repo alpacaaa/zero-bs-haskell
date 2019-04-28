@@ -72,7 +72,19 @@
         <pre>
           <code class="language-javascript">{{{ JS }}}</code>
         </pre>
+      </section>
 
+      {{#video}}
+      <section>
+        <h4>Walkthrough video</h4>
+        <p>
+          I recorded an entire video of me coding a solution to this exercise from scratch!<br>
+        </p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </section>
+      {{/video}}
+
+      <section>
         <h4>Where to get help</h4>
         <p>
           Got stuck? Don't worry! Join the discussion on Github (<a href="https://github.com/alpacaaa/zero-bullshit-haskell/issues/{{ issue }}">issue #{{ issue }}</a>). It might
