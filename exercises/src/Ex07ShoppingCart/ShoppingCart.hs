@@ -4,6 +4,7 @@ import GHC.Generics (Generic)
 import qualified Data.Aeson as Aeson
 import qualified Zero.Server as Server
 
+
 data Item
   = Item { model :: String, quantity :: Int }
   deriving (Eq, Show, Generic, Aeson.FromJSON, Aeson.ToJSON)
@@ -31,11 +32,8 @@ currentCartHandler :: Cart -> Server.Request -> (Cart, Server.Response)
 currentCartHandler state _
   = (state, response)
   where
-    -- Cart current
-    --   = state
-
     response
-      = Server.jsonResponse (state)
+      = Server.jsonResponse state
 
 initialState :: Cart
 initialState = Cart []

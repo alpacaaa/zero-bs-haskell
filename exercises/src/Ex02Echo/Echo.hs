@@ -2,8 +2,6 @@ module Ex02Echo.Echo where
 
 import qualified Zero.Server as Server
 
--- curl http://localhost:7879/echo -H "Content-Type: application/json" --data "[]"
-
 
 echoHandler :: Server.Request -> Server.Response
 echoHandler req
