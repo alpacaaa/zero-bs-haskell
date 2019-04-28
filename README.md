@@ -64,6 +64,7 @@
 - [Exercise #05 - On/Off switch](https://alpacaaa.net/zero-bullshit-haskell/Ex05)
 - [Exercise #06 - Counter](https://alpacaaa.net/zero-bullshit-haskell/Ex06)
 - [Exercise #07 - ShoppingCart](https://alpacaaa.net/zero-bullshit-haskell/Ex07)
+- [Exercise #08 - ShoppingCart V2](https://alpacaaa.net/zero-bullshit-haskell/Ex08)
 
 _work in progress_
 

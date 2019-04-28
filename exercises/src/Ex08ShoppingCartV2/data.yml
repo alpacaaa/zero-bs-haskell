@@ -4,7 +4,7 @@ solution: Ex08ShoppingCartV2/ShoppingCartV2.hs
 issue: 7
 intro: |
   <p>
-    <em>Continues from <a href="./Ex07">Exercise #07</a></em>.<br>
+    <em>Continues from <a href="../Ex07">Exercise #07</a></em>.<br>
     Items can now be added multiple times. If the item is in the cart already,
     add the existing quantity to the new item's quantity.
   </p>
@@ -16,6 +16,12 @@ intro: |
     <li><code>GET  /cart</code></li>
     <li><code>POST /cart</code></li>
   </ul>
+
+  <p class="msg hint">
+    Use the <code>Map k v</code> type from the <code>Data.Map.Strict</code> module
+    (<a href="https://hackage.haskell.org/package/containers/docs/Data-Map-Strict.html">containers</a> package)
+    to store items in the cart. You'll need the <code>lookup</code> and <code>insert</code> functions.
+  </p>
 
   <p>
     The cart starts empty. Note how the order of the returned items changes
