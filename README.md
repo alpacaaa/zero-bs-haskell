@@ -1,13 +1,17 @@
-![Zero Bullshit Haskell](exercises/test/logo.png)
 
+<p align="center">
+  <img alt="Zero Bullshit Haskell" src="exercises/test/logo.png" width="480">
+</p>
 
+<p align="center">
+  Let's learn Haskell. For real this time. :rocket:
+</p>
 
-Let's learn Haskell. For real this time. :rocket:
+<p align="center">
+  <a href="https://www.youtube.com/channel/UCJiwOqQi88UZCe8w7lwV4gw"><img alt="Zero Bullshit Haskell Youtube channel" src="https://img.shields.io/badge/Youtube-channel-ff0000.svg?style=flat"></a>
+  <a href="https://alpacaaa.net/zero-bullshit-haskell/docs/"><img alt="Zero Bullshit Haddock documentation" src="https://img.shields.io/badge/docs-zero--bullshit-5E5184.svg?style=flat"></a>
+</p>
 
-##### Quick links
-
-- [Youtube Channel](https://www.youtube.com/channel/UCJiwOqQi88UZCe8w7lwV4gw)
-- [`zero-bullshit` Documentation](https://alpacaaa.net/zero-bullshit-haskell/docs/)
 
 &nbsp;
 
