@@ -507,7 +507,7 @@ Let's look at another example.
   In JS
 
   const sumItems = (items) => {
-    const reducer = (item, acc) => {
+    const reducer = (acc, item) => {
       console.log(item)
       return acc + item
     }
