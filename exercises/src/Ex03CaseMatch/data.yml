@@ -2,6 +2,7 @@ exercise: "03"
 title: Case match
 solution: Ex03CaseMatch/CaseMatch.hs
 issue: 3
+video: 1HPDX3zy6YA?start=279
 intro: |
   <p>
     Write a server that exposes a <code>/case</code> route.<br>
