@@ -51,6 +51,11 @@
   - [An even shorter interlude on constraints](#toc-interlude-constraints)
   - [`FromJSON` and `ToJSON`](#toc-fromjson-tojson)
 
+- [Dealing with mutable state](#toc-dealing-state)
+  - [Modeling state the functional way ](#toc-modeling-state)
+  - [A slight detour in OTP land](#toc-detour-otp)
+  - [Let the runtime handle state for you](#toc-runtime-handle)
+
 &nbsp;
 
 
@@ -752,4 +757,166 @@ myHandler req
 
 
 The first few Zero Bullshit Haskell exercises don't deal with JSON at all, but given that exercises are about writing webservers, then you need to understand how to work with JSON. [Exercise #07](https://alpacaaa.net/zero-bullshit-haskell/Ex07) is all about putting what we just discussed into practice. If something isn't clear, join the discussion in the relevant issue!
+
+
+
+&nbsp;
+
+# <a id="toc-dealing-state"></a>Dealing with mutable state
+
+
+Mutable state is one of the most common sources of bugs I regularly faced over the years. In Haskell everything is immutable (which is super nice) but sometimes we have to deal with mutable state nonetheless. How do we do that?
+
+### <a id="toc-modeling-state"></a>Modeling state the functional way
+
+In Javascript, we can just define a global variable and get away with it. For example, here's how we could implement a counter that gets increased with every request.
+
+```javascript
+var mutableCounter = 0
+
+app.post('/increase-counter', (req, res) => {
+  mutableCounter += 1
+  res.send('Current count: ' + mutableCounter)
+})
+```
+
+We could still define a _global_ `mutableCounter` value in Haskell, but there wouldn't be any way to update it.
+
+```haskell
+mutableCounter :: Int
+mutableCounter = 0
+
+counterHandler :: Server.Request -> Server.Response
+counterHandler = ???
+-- mutableCounter = mutableCounter + 1
+-- No way the compiler would allow that!
+```
+
+Ok fine, GHC always has to ruin the party. Let's try to model a change of state as a function then. So far, our `counterHandler`  just takes a `Request` and returns a `Response`. A good first step would be adding the current counter value as an input to the function, so that we can use it!
+
+```haskell
+counterHandler :: Int -> Server.Request -> Server.Response
+counterHandler currentCount
+  = Server.simpleHandler $ "Current count: " ++ show (currentCount + 1)
+```
+
+This is fine, but `currentCount` is still an immutable value, so we can't do anything with it. Sure we can now return the current value to the client, but we can't update it.
+
+What if we could let the server **manage state for us** instead?
+Right now, our handler only returns a `Response`, but there's no reason why we couldn't return _extra information_. In fact, we can tell the server that along with the `Response`, we now also return an updated version of the state! The server will _somehow_ take that new value and do the actual mutation, we're not concerned with the details. The impure state update is hidden in library code and we can keep on writing nice pure functions. Turns out we don't really need mutable variables after all. :)
+
+```haskell
+counterHandler :: Int -> Server.Request -> (Int, Server.Response)
+counterHandler currentCount
+  = (newCount, response)
+  where
+    newCount
+      = currentCount + 1
+    response
+      = Server.simpleHandler ("Current count: " ++ show newCount)
+```
+
+> Note how we now return a _tuple_ with two elements (the new state, the `Response`) instead of just the `Response`.
+
+This is fantastic. All of our values are still immutable, we're just using **functions to model state updates**. The great thing about this is that `counterHandler` is still **super easy to test**. You feed it some state and check if the state you get out is the correct one. Have you ever written a test for a function that dealt with global mutable state (like in the JS example above)? I did, and then proceeded to learn Haskell.
+
+
+### <a id="toc-detour-otp"></a>A slight detour in OTP land
+
+[OTP](http://erlang.org/doc/system_architecture_intro/sys_arch_intro.html) is the set of indispensable libraries that you use to build Erlang/Elixir programs. Erlang is a functional language with immutable variables and, as you can imagine, wouldn't allow you to mutate any state.
+
+One of the core abstraction in Erlang is the `gen_server`. A `gen_server` allows you to model a server by providing _callbacks_ that hook into the server lifecycle, so that you can implement your logic there.
+
+Here's how the callback to handle requests looks like:
+
+```erlang
+ handle_call(Request, From, State)
+```
+
+It takes a `Request`, the process id of who's making the request and the **current state** of the server. What do you think the return value is?
+
+```erlang
+{reply, Reply, State1}
+```
+
+You guessed it, once again the trusty tuple!
+
+Along with the Response (`Reply` in this case) we also return an updated version of the state, here referred to as `State1` to indicate it's going to be different than `State`.
+
+
+
+### <a id="toc-runtime-handle"></a>Let the runtime handle state for you
+
+We almost have all we need to build stateful request handlers. Let's drop some type signatures to understand what we're missing. In the `zero-bullshit` package, we create stateful handlers with the function `statefulHandler`.
+
+```haskell
+simpleHandler
+  :: Method
+  -> String
+  -> (Request -> Response)
+  -> Handler
+
+statefulHandler
+  :: Method
+  -> String
+  -> (state -> Request -> (state, Response))
+  -> StatefulHandler state
+```
+
+This signature is similar to the familiar `simpleHandler` that we've used up until now. We know what `Method` and `String` are, so let's ignore those. The callback is interesting though (the function between parens). Note also how the return types are different. We wouldn't be able to pass a `StatefulHandler` directly to `startServer`, which only accepts `Handler`.
+
+Let's bring back `counterHandler` and compare it to the callback we have here.
+
+```haskell
+                 (state -> Request -> (state, Response))
+counterHandler :: Int   -> Request -> (Int,   Response)
+```
+
+Wait, it's exactly the same thing! `state` is what we call a _type variable_. We have seen a few of those already, when decoding JSON for example. We could have used `a` instead of `state` and it would have worked just the same, but it's good to be explicit with type variables when you can.
+
+So `state` is a type, any type for that matter, it's not _constrained_ in any way so you can use whatever you want (we're using an `Int` here).
+
+The last bit is `StatefulHandler state`. You might be wondering why `state` is there. Why can't our type just be `StatefulHandler`? The reason is we want to track the type of `state` an handler is compatible with. This is to **make sure we don't mix handlers** that work with `Int`s with handlers that work with `String`s for example. If it's still confusing, keep on reading and remember that `state` is just a type variable (meaning it can be replaced by `Int`, `String`, `Person` whichever type you want).
+
+---
+
+How do we get an `Handler` from a `StatefulHandler state` so that we can pass it to `startServer`? We use `handlersWithState`.
+
+```haskell
+handlersWithState :: state -> [StatefulHandler state] -> Handler
+```
+
+The server needs to know what the initial state is going to be, so that's the first argument we need to pass to `handlersWithState`. And then we can just pass a list of `StatefulHandler` provided that **they all work with the same `state` type**. That's why we need the type variable!
+
+> `handlersWithState` is a _polymorphic_ function. It works with any type of `state`. Do you want `Int`? That's fine. Want `String`? Fine as well. But it **must match** the type of the `StatefulHandler`s you provide.
+>
+> We can use type variables in type constructors to carry _extra information_ at the type level. In this case, `StatefulHandler state` carries more information than just `StatefulHandler` because we can talk about the `state` as well. The better you model your types, the more guarantees you get at compile time. You're _reducing_ the number of invalid programs that the compiler will accept and get free errors (at compile time) when your types don't line up.
+>
+> That's where a type system is incredibly useful. If our program doesn't make sense at the type level, we're not going to be able to compile it and have bugs sneak into production code.
+
+Putting it all together, we can use our `counterHandler` like this:
+
+```haskell
+initialState :: Int
+initialState = 0
+
+counterHandler :: Int -> Server.Request -> (Int, Server.Response)
+counterHandler currentCount
+  = (newCount, response)
+  where
+    newCount
+      = currentCount + 1
+    response
+      = Server.simpleHandler ("Current count: " ++ show newCount)
+
+main :: IO ()
+main
+  = Server.startServer
+      [ Server.handlersWithState initialState [counterHandler]
+      ]
+```
+
+This is how we **model state in a functional way**.
+
+At the end of the day, there's still going to be some mutable variable that gets updated under the hood, but the benefit of using this approach is we only get to deal with the **nice api on top**. When writing a `gen_server` in Erlang you don't have to think about how to manage state, everything is taken care of, just supply a callback. The same goes for the `zero-bullshit` server, you just have to pick a `state` of your liking, handle the `Request` and return an updated version of the `state` together with a `Response`.
 
