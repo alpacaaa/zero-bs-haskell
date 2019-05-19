@@ -2,6 +2,7 @@ exercise: "04"
 title: String manipulation
 solution: Ex04StringManipulation/StringManipulation.hs
 issue: 4
+video: N06HY53Vvic
 intro: |
   <p>
     Write a server that exposes a <code>/string-manipulation</code> route.<br>
