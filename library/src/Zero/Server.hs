@@ -54,6 +54,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.HTTP.Types as HTTP.Types
+import qualified Network.Wai as Wai
 import qualified Network.Wai.Middleware.Cors as Cors
 import qualified Web.Scotty as Scotty
 
@@ -144,9 +145,10 @@ createRequest = do
     textToString (a, b)
       = (Text.Lazy.unpack a, Text.Lazy.unpack b)
 
-handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
-handleResponse path req res = do
-  logInfo $ path <> " " <> requestBody req
+handleResponse :: Request -> Response -> Scotty.ActionM ()
+handleResponse req res = do
+  path <- Text.Encoding.decodeUtf8 . Wai.rawPathInfo <$> Scotty.request
+  logInfo $ Text.unpack path <> " " <> requestBody req
 
   case responseType res of
     JsonResponse -> json
@@ -253,7 +255,7 @@ simpleHandler method path toResponse
   = SimpleHandler
   $ StatelessHandler method path $ do
       req <- createRequest
-      handleResponse path req (toResponse req)
+      handleResponse req (toResponse req)
 
 -- | An handler that allows side effects (note the `IO` in @IO Response@).
 -- Unlike a `simpleHandler`, you can now have `IO` operations.
@@ -266,7 +268,7 @@ effectfulHandler method path toResponse
   $ StatelessHandler method path $ do
       req <- createRequest
       res <- Scotty.liftAndCatchIO $ toResponse req
-      handleResponse path req res
+      handleResponse req res
 
 -- | A `StatefulHandler` allows you to keep some state around across requests.
 --   For example, if you want to implement a counter, you could keep the current
@@ -314,7 +316,7 @@ handlersWithState initialState handlers
                 TVar.writeTVar stateVar newState
                 pure res
 
-            handleResponse path req res
+            handleResponse req res
 
 -- | Exactly like `startServer`, but allows you to specify a different port.
 startServerOnPort :: Int -> [Handler] -> IO ()
@@ -377,7 +379,7 @@ startServerOnPort port serverDef = do
 
     padMethod h
       = Text.unpack
-      $ Text.justifyLeft 5 ' '
+      $ Text.justifyLeft 6 ' '
       $ Text.pack
       $ show (handlerMethod h)
 
