@@ -1,22 +1,15 @@
-{-# LANGUAGE DuplicateRecordFields #-}
 module TodoMVC.Backend where
 
 import Data.Maybe (fromMaybe)
 import Data.Map.Strict (Map)
 import GHC.Generics (Generic)
 
+import qualified TodoMVC.Input as Input
+
 import qualified Data.Aeson as Aeson
 import qualified Data.List as List
 import qualified Data.Map.Strict as Map
 import qualified Zero.Server as Server
-
-data InputTodo
-  = InputTodo
-      { title :: Maybe String
-      , completed :: Maybe Bool
-      , order :: Maybe Int
-      }
-  deriving (Eq, Show, Generic, Aeson.FromJSON)
 
 data Todo
   = Todo
@@ -61,11 +54,11 @@ main
 
     create newId input
       = Todo
-          { title = fromMaybe "" $ title (input :: InputTodo)
+          { title = fromMaybe "" $ Input.title input
           , completed = False
           , url = "http://localhost:7879/api/" ++ newId
           , todoId = newId
-          , order = order (input :: InputTodo)
+          , order = Input.order input
           }
 
     postTodo state req
@@ -105,10 +98,10 @@ main
       input <- Server.decodeJson (Server.requestBody req)
       existing <- findTodo "id" state req
       let updated
-            = (existing :: Todo)
-                { title = fromMaybe (title (existing :: Todo)) $ title (input :: InputTodo)
-                , completed = fromMaybe (completed (existing :: Todo)) $ completed (input :: InputTodo)
-                , order = order (input :: InputTodo)
+            = existing
+                { title = fromMaybe (title existing) $ Input.title input
+                , completed = fromMaybe (completed existing) $ Input.completed input
+                , order = Input.order input
                 }
 
       pure
