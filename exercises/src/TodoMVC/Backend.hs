@@ -1,16 +1,20 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 module TodoMVC.Backend where
 
+import Data.Maybe (fromMaybe)
+import Data.Map.Strict (Map)
 import GHC.Generics (Generic)
 
 import qualified Data.Aeson as Aeson
 import qualified Data.List as List
--- import qualified Data.Map.Strict as Map
+import qualified Data.Map.Strict as Map
 import qualified Zero.Server as Server
 
 data InputTodo
   = InputTodo
-      { title :: String
+      { title :: Maybe String
+      , completed :: Maybe Bool
+      , order :: Maybe Int
       }
   deriving (Eq, Show, Generic, Aeson.FromJSON)
 
@@ -20,12 +24,13 @@ data Todo
       , completed :: Bool
       , url :: String
       , todoId :: String
+      , order :: Maybe Int
       }
   deriving (Eq, Show, Generic, Aeson.ToJSON)
 
 data TodoState
   = TodoState
-      { todos :: [Todo]
+      { todos :: Map String Todo
       , nextIndex :: Int
       }
   deriving (Eq, Show)
@@ -33,7 +38,7 @@ data TodoState
 initialState :: TodoState
 initialState
   = TodoState
-      { todos = []
+      { todos = Map.empty
       , nextIndex = 1
       }
 
@@ -46,19 +51,21 @@ main
           , Server.statefulHandler Server.DELETE "/api" deleteAll
           , Server.statefulHandler Server.GET "/api/:id" getSingle
           , Server.statefulHandler Server.PATCH "/api/:id" patchTodo
+          , Server.statefulHandler Server.DELETE "/api/:id" deleteTodo
           ]
       ]
 
   where
     getTodos state _
-      = (state, Server.jsonResponse $ todos state)
+      = (state, Server.jsonResponse $ stateToList state)
 
     create newId input
       = Todo
-          { title = title (input :: InputTodo)
+          { title = fromMaybe "" $ title (input :: InputTodo)
           , completed = False
           , url = "http://localhost:7879/api/" ++ newId
           , todoId = newId
+          , order = order (input :: InputTodo)
           }
 
     postTodo state req
@@ -75,10 +82,11 @@ main
     addTodo state input
       = let
           index = nextIndex state
-          newTodo = create (show index) input
+          tId = show index
+          newTodo = create tId input
           newState
             = TodoState
-                { todos = (todos state) ++ [newTodo]
+                { todos = Map.insert tId newTodo (todos state)
                 , nextIndex = index + 1
                 }
         in (newState, newTodo)
@@ -88,9 +96,32 @@ main
           Right todo -> (state, Server.jsonResponse todo)
           Left err -> (state, Server.failureResponse err)
 
-    -- TODO update state blah blah
-    patchTodo state _
-      = (state, Server.stringResponse "wtf")
+    patchTodo state req
+      = case updateTodo state req of
+          Right (newState, todo) -> (newState, Server.jsonResponse todo)
+          Left err -> (state, Server.failureResponse err)
+
+    updateTodo state req = do
+      input <- Server.decodeJson (Server.requestBody req)
+      existing <- findTodo "id" state req
+      let updated
+            = (existing :: Todo)
+                { title = fromMaybe (title (existing :: Todo)) $ title (input :: InputTodo)
+                , completed = fromMaybe (completed (existing :: Todo)) $ completed (input :: InputTodo)
+                , order = order (input :: InputTodo)
+                }
+
+      pure
+        ( state { todos = Map.insert (todoId existing) updated (todos state) }
+        , updated
+        )
+
+    deleteTodo state req
+      = let update todo
+              = state { todos = Map.delete (todoId todo) (todos state) }
+        in case findTodo "id" state req of
+            Right todo -> (update todo, Server.stringResponse "ok")
+            Left err -> (state, Server.failureResponse err)
 
 findTodo :: String -> TodoState -> Server.Request -> Either String Todo
 findTodo urlVar state req
@@ -112,3 +143,7 @@ findTodoInState state tId
   = List.find
       (\todo -> todoId todo == tId)
       (todos state)
+
+stateToList :: TodoState -> [Todo]
+stateToList state
+  = snd <$> Map.toList (todos state)
