@@ -1,3 +1,7 @@
+{-
+  Integration tests:
+  https://www.todobackend.com/specs/?http://localhost:7879/api
+-}
 module TodoMVC.Backend where
 
 import qualified TodoMVC.Core as Core
@@ -10,28 +14,28 @@ main :: IO ()
 main
   = Server.startServer
       [ Server.handlersWithState Core.initialState
-          [ Server.statefulHandler Server.GET    "/api" getTodos
+          [ Server.statefulHandler Server.GET    "/api" getAll
           , Server.statefulHandler Server.POST   "/api" postTodo
           , Server.statefulHandler Server.DELETE "/api" deleteAll
-          , Server.statefulHandler Server.GET    "/api/:id" getSingle
+          , Server.statefulHandler Server.GET    "/api/:id" getTodo
           , Server.statefulHandler Server.PATCH  "/api/:id" patchTodo
           , Server.statefulHandler Server.DELETE "/api/:id" deleteTodo
           ]
       ]
 
   where
-    getTodos state _
+    getAll state _
       = (state, Server.jsonResponse $ Core.stateToList state)
 
     postTodo state req
       = decodeInputOrFail state req $ \input ->
-          let (newState, newTodo) = Core.addTodo state input
+          let (newState, newTodo) = Core.createTodo state input
           in (newState, Server.jsonResponse newTodo)
 
     deleteAll _ _
       = (Core.initialState, Server.stringResponse "ok")
 
-    getSingle state req
+    getTodo state req
       = findTodoOrFail state req $ \todo ->
           (state, Server.jsonResponse todo)
 
@@ -53,7 +57,7 @@ findTodoOrFail
 findTodoOrFail state req cb
   = case maybeUrlId of
       Nothing ->
-        (state, Server.failureResponse "No ID found in URL")
+        (state, Server.failureResponse "No :id found in URL")
       Just (_, tId) ->
         case Core.findTodo state tId of
           Nothing ->
@@ -74,6 +78,6 @@ decodeInputOrFail
 decodeInputOrFail state req cb
   = case Server.decodeJson (Server.requestBody req) of
       Left err ->
-        (state, Server.failureResponse $ show err)
+        (state, Server.failureResponse err)
       Right input ->
         cb input

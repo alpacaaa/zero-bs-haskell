@@ -34,17 +34,17 @@ initialState
       }
 
 create :: String -> Input.InputTodo -> Todo
-create newId input
+create tId input
   = Todo
-      { title     = fromMaybe "" $ Input.title input
+      { title     = fromMaybe "" (Input.title input)
       , completed = False
-      , url       = "http://localhost:7879/api/" ++ newId
-      , todoId    = newId
+      , url       = "http://localhost:7879/api/" ++ tId
+      , todoId    = tId
       , order     = Input.order input
       }
 
-addTodo :: State -> Input.InputTodo -> (State, Todo)
-addTodo state input
+createTodo :: State -> Input.InputTodo -> (State, Todo)
+createTodo state input
   = (newState, newTodo)
   where
     index
@@ -63,16 +63,16 @@ updateTodo :: State -> Todo -> Input.InputTodo -> (State, Todo)
 updateTodo state existing input
   = (newState, updated)
   where
-    updated
-      = existing
-          { title = fromMaybe (title existing) $ Input.title input
-          , completed = fromMaybe (completed existing) $ Input.completed input
-          , order = Input.order input
-          }
-
     newState
       = state
           { todos = Map.insert (todoId existing) updated (todos state) }
+
+    updated
+      = existing
+          { title = fromMaybe (title existing) (Input.title input)
+          , completed = fromMaybe (completed existing) (Input.completed input)
+          , order = Input.order input
+          }
 
 deleteTodo :: State -> Todo -> State
 deleteTodo state todo
