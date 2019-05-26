@@ -21,6 +21,7 @@ module Zero.Server
   -- * Request
   , Request
   , requestBody
+  , requestParams
   , decodeJson
 
   -- * Response
@@ -50,6 +51,7 @@ import qualified Control.Concurrent.STM.TVar as TVar
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.Text as Text
+import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
 import qualified Network.HTTP.Types as HTTP.Types
 import qualified Network.Wai.Middleware.Cors as Cors
@@ -71,13 +73,38 @@ data Method
 --
 -- Whenever you want to inspect the content of a `Request`, use `requestBody`.
 data Request
-  = Request String
+  = Request
+      { reqBody :: String
+      , reqParams :: [(String, String)]
+      }
   deriving (Eq, Show)
 
 -- | Extract the request body as a `String`.
 -- This is the raw request body, no parsing happens at this stage.
 requestBody :: Request -> String
-requestBody (Request body) = body
+requestBody (Request body _) = body
+
+-- | Extract a list of URL variables.
+--
+-- The example below uses a @name@ variable:
+--
+-- > handleRequest :: Request -> Response
+-- > handleRequest req
+-- >   = stringResponse (show params)
+-- >   where
+-- >     params = requestParams req
+-- >
+-- > helloHandler :: Handler
+-- > helloHandler
+-- >   = simpleHandler GET "/hello/:name" handleRequest
+--
+-- >>> curl localhost:7879/hello/tom
+-- [("name", "tom")]
+--
+-- >>> curl localhost:7879/hello/alice
+-- [("name", "alice")]
+requestParams :: Request -> [(String, String)]
+requestParams (Request _ params) = params
 
 data ResponseType
   = StringResponse
@@ -111,7 +138,11 @@ data Response
 createRequest :: Scotty.ActionM Request
 createRequest = do
   body <- Text.Encoding.decodeUtf8 . ByteString.Lazy.toStrict <$> Scotty.body
-  pure $ Request (Text.unpack body)
+  params <- (fmap textToString) <$> Scotty.params
+  pure $ Request (Text.unpack body) params
+  where
+    textToString (a, b)
+      = (Text.Lazy.unpack a, Text.Lazy.unpack b)
 
 handleResponse :: String -> Request -> Response -> Scotty.ActionM ()
 handleResponse path req res = do
@@ -325,12 +356,19 @@ startServerOnPort port serverDef = do
               PUT    -> HTTP.Types.PUT
               PATCH  -> HTTP.Types.PATCH
               DELETE -> HTTP.Types.DELETE
-
     corsMiddleware
       = Cors.cors
           ( const $ Just
             (Cors.simpleCorsResourcePolicy
-              { Cors.corsRequestHeaders = ["Content-Type"] })
+              { Cors.corsRequestHeaders = ["Content-Type"]
+              , Cors.corsMethods
+                  = [ "GET"
+                    , "POST"
+                    , "PUT"
+                    , "PATCH"
+                    , "DELETE"
+                    ]
+              })
           )
 
     logHandler h
