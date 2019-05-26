@@ -20,3 +20,7 @@ intro: |
       >>> expected "On"
     </pre>
   </p>
+  <p>
+    You'll need a <code>StatefulHandler</code> for this exercise, so that state can be kept
+    across requests. Read more on <a href="https://github.com/alpacaaa/zero-bullshit-haskell#toc-dealing-state">Dealing with mutable state</a>.
+  </p>
