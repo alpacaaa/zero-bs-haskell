@@ -7,6 +7,7 @@ import qualified Ex05OnoffSwitch.OnoffSwitch
 import qualified Ex06Counter.Counter
 import qualified Ex07ShoppingCart.ShoppingCart
 import qualified Ex08ShoppingCartV2.ShoppingCartV2
+import qualified TodoMVC.Backend
 
 import qualified System.Environment
 
@@ -22,5 +23,9 @@ main = do
     ["06"] -> Ex06Counter.Counter.main
     ["07"] -> Ex07ShoppingCart.ShoppingCart.main
     ["08"] -> Ex08ShoppingCartV2.ShoppingCartV2.main
-    _      ->
+
+    -- Extra exercises
+    ["todomvc"] -> TodoMVC.Backend.main
+
+    _ ->
       putStrLn "Invalid exercise number. Provide number as a cli argument."
