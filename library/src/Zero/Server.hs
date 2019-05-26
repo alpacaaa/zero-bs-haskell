@@ -59,11 +59,12 @@ import qualified Web.Scotty as Scotty
 -- import qualified Debug.Trace as Debug
 
 -- | HTTP Method.
---
--- Only `GET` or `POST` for simplicity.
 data Method
   = GET
   | POST
+  | PUT
+  | PATCH
+  | DELETE
   deriving (Eq, Show)
 
 -- | HTTP Request.
@@ -319,8 +320,11 @@ startServerOnPort port serverDef = do
           = Scotty.capture (handlerPath h)
         method
           = case handlerMethod h of
-              GET  -> HTTP.Types.GET
-              POST -> HTTP.Types.POST
+              GET    -> HTTP.Types.GET
+              POST   -> HTTP.Types.POST
+              PUT    -> HTTP.Types.PUT
+              PATCH  -> HTTP.Types.PATCH
+              DELETE -> HTTP.Types.DELETE
 
     corsMiddleware
       = Cors.cors
