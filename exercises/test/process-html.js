@@ -22,7 +22,7 @@ const buildHtml = (exercise) => {
 }
 
 
-glob('../src/*/', (err, folders) => {
+glob('../src/Ex*/', (err, folders) => {
   if (err) throw err
 
   folders.forEach(exercise => {
