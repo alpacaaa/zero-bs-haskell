@@ -19,7 +19,7 @@
       h2 { margin: 0 0 0.5em; }
 
       h4 { margin: 0 0 .5em; }
-      pre { margin: 0; overflow: auto; max-height: 400px; }
+      pre { margin: 0; overflow: auto; max-height: 600px; }
       pre[class*=language-] { padding: 0 1em; margin-bottom: 1.5em; }
       code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
 
@@ -68,6 +68,13 @@
         Refresh the page to run the tests again.
       </p>
 
+      <section>
+        <h4>Reference node.js implementation</h4>
+        <pre>
+          <code class="language-javascript">{{{ JS }}}</code>
+        </pre>
+      </section>
+
       {{#video}}
       <section>
         <h4>Walkthrough video</h4>
@@ -77,13 +84,6 @@
         <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </section>
       {{/video}}
-
-      <section>
-        <h4>Reference node.js implementation</h4>
-        <pre>
-          <code class="language-javascript">{{{ JS }}}</code>
-        </pre>
-      </section>
 
       <section>
         <h4>Where to get help</h4>
