@@ -13,17 +13,17 @@ import qualified Zero.Server as Server
 
 data Todo
   = Todo
-      { title :: String
+      { title     :: String
       , completed :: Bool
-      , url :: String
-      , todoId :: String
-      , order :: Maybe Int
+      , url       :: String
+      , todoId    :: String
+      , order     :: Maybe Int
       }
   deriving (Eq, Show, Generic, Aeson.ToJSON)
 
 data TodoState
   = TodoState
-      { todos :: Map String Todo
+      { todos     :: Map String Todo
       , nextIndex :: Int
       }
   deriving (Eq, Show)
@@ -31,7 +31,7 @@ data TodoState
 initialState :: TodoState
 initialState
   = TodoState
-      { todos = Map.empty
+      { todos     = Map.empty
       , nextIndex = 1
       }
 
@@ -39,11 +39,11 @@ main :: IO ()
 main
   = Server.startServer
       [ Server.handlersWithState initialState
-          [ Server.statefulHandler Server.GET "/api" getTodos
-          , Server.statefulHandler Server.POST "/api" postTodo
+          [ Server.statefulHandler Server.GET    "/api" getTodos
+          , Server.statefulHandler Server.POST   "/api" postTodo
           , Server.statefulHandler Server.DELETE "/api" deleteAll
-          , Server.statefulHandler Server.GET "/api/:id" getSingle
-          , Server.statefulHandler Server.PATCH "/api/:id" patchTodo
+          , Server.statefulHandler Server.GET    "/api/:id" getSingle
+          , Server.statefulHandler Server.PATCH  "/api/:id" patchTodo
           , Server.statefulHandler Server.DELETE "/api/:id" deleteTodo
           ]
       ]
@@ -54,20 +54,17 @@ main
 
     create newId input
       = Todo
-          { title = fromMaybe "" $ Input.title input
+          { title     = fromMaybe "" $ Input.title input
           , completed = False
-          , url = "http://localhost:7879/api/" ++ newId
-          , todoId = newId
-          , order = Input.order input
+          , url       = "http://localhost:7879/api/" ++ newId
+          , todoId    = newId
+          , order     = Input.order input
           }
 
     postTodo state req
-      = case Server.decodeJson (Server.requestBody req) of
-          Right input ->
-            let (newState, newTodo) = addTodo state input
-            in (newState, Server.jsonResponse newTodo)
-          Left err ->
-            (state, Server.failureResponse $ show err)
+      = decodeInputOrFail state req $ \input ->
+          let (newState, newTodo) = addTodo state input
+          in (newState, Server.jsonResponse newTodo)
 
     deleteAll _ _
       = (initialState, Server.stringResponse "ok")
@@ -85,58 +82,67 @@ main
         in (newState, newTodo)
 
     getSingle state req
-      = case findTodo "id" state req of
-          Right todo -> (state, Server.jsonResponse todo)
-          Left err -> (state, Server.failureResponse err)
+      = findTodoOrFail state req $ \todo ->
+          (state, Server.jsonResponse todo)
 
     patchTodo state req
-      = case updateTodo state req of
-          Right (newState, todo) -> (newState, Server.jsonResponse todo)
-          Left err -> (state, Server.failureResponse err)
+      = findTodoOrFail state req $ \existing ->
+          decodeInputOrFail state req $ \input ->
+            let updated
+                  = existing
+                      { title = fromMaybe (title existing) $ Input.title input
+                      , completed = fromMaybe (completed existing) $ Input.completed input
+                      , order = Input.order input
+                      }
 
-    updateTodo state req = do
-      input <- Server.decodeJson (Server.requestBody req)
-      existing <- findTodo "id" state req
-      let updated
-            = existing
-                { title = fromMaybe (title existing) $ Input.title input
-                , completed = fromMaybe (completed existing) $ Input.completed input
-                , order = Input.order input
-                }
-
-      pure
-        ( state { todos = Map.insert (todoId existing) updated (todos state) }
-        , updated
-        )
+            in
+              ( state { todos = Map.insert (todoId existing) updated (todos state) }
+              , Server.jsonResponse updated
+              )
 
     deleteTodo state req
-      = let update todo
-              = state { todos = Map.delete (todoId todo) (todos state) }
-        in case findTodo "id" state req of
-            Right todo -> (update todo, Server.stringResponse "ok")
-            Left err -> (state, Server.failureResponse err)
+      = findTodoOrFail state req $ \todo ->
+          let updated
+                = state { todos = Map.delete (todoId todo) (todos state) }
+          in (updated, Server.stringResponse "ok")
 
-findTodo :: String -> TodoState -> Server.Request -> Either String Todo
-findTodo urlVar state req
+findTodoOrFail
+  :: TodoState
+  -> Server.Request
+  -> (Todo -> (TodoState, Server.Response))
+  -> (TodoState, Server.Response)
+findTodoOrFail state req cb
   = case maybeUrlId of
       Nothing ->
-        Left "No ID found in URL"
+        (state, Server.failureResponse "No ID found in URL")
       Just (_, tId) ->
         case findTodoInState state tId of
-          Nothing -> Left "Todo not found"
-          Just todo -> Right todo
+          Nothing ->
+            (state, Server.failureResponse "Todo not found")
+          Just todo ->
+            cb todo
   where
     maybeUrlId
       = List.find
-          (\(k, _) -> k == urlVar)
+          (\(k, _) -> k == "id")
           (Server.requestParams req)
 
 findTodoInState :: TodoState -> String -> Maybe Todo
 findTodoInState state tId
-  = List.find
-      (\todo -> todoId todo == tId)
-      (todos state)
+  = Map.lookup tId (todos state)
 
 stateToList :: TodoState -> [Todo]
 stateToList state
   = snd <$> Map.toList (todos state)
+
+decodeInputOrFail
+  :: TodoState
+  -> Server.Request
+  -> (Input.InputTodo -> (TodoState, Server.Response))
+  -> (TodoState, Server.Response)
+decodeInputOrFail state req cb
+  = case Server.decodeJson (Server.requestBody req) of
+      Left err ->
+        (state, Server.failureResponse $ show err)
+      Right input ->
+        cb input
