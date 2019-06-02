@@ -1,0 +1,15 @@
+{
+  "name": "todomvc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Backend.js",
+  "scripts": {
+    "format": "yarn prettier --write *.js --no-semi",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "1.17.1"
+  }
+}

@@ -5,7 +5,7 @@
 module TodoMVC.Backend where
 
 import qualified TodoMVC.Core as Core
-import qualified TodoMVC.Input as Input
+import qualified TodoMVC.Partial as Partial
 
 import qualified Data.List as List
 import qualified Zero.Server as Server
@@ -73,7 +73,7 @@ findTodoOrFail state req cb
 decodeInputOrFail
   :: Core.State
   -> Server.Request
-  -> (Input.InputTodo -> (Core.State, Server.Response))
+  -> (Partial.PartialTodo -> (Core.State, Server.Response))
   -> (Core.State, Server.Response)
 decodeInputOrFail state req cb
   = case Server.decodeJson (Server.requestBody req) of
