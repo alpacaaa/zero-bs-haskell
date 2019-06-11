@@ -157,9 +157,7 @@ There are two commands that you're going to use all the time. To be honest, they
 
 # <a id="toc-types"></a>What are types and why you should care
 
-If you've read a Haskell blog post, joined some functional programming chat or attended a conference talk, chances are you experienced how much **people like to talk about types**. It's the number one thing the Haskell community likes to jerk off about.
-
-That's fine, once you get familiar with this stuff, you grow a weird and obsessive interest in pushing the _type system_, which is the set of rules that GHC follows to check that your program is correct.
+If you've read a Haskell blog post, joined some functional programming chat or attended a conference talk, chances are you experienced how much **people like to talk about types**. That's fine, once you get familiar with this stuff, you grow a weird and obsessive interest in pushing the _type system_, which is the set of rules that GHC follows to check that your program is correct.
 
 But if you're like me, you don't.
 
