@@ -21,6 +21,7 @@ module Zero.Server
   -- * Request
   , Request
   , requestBody
+  , requestParameter
   , requestParams
   , decodeJson
 
@@ -50,6 +51,7 @@ import qualified Control.Concurrent.STM as STM
 import qualified Control.Concurrent.STM.TVar as TVar
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as ByteString.Lazy
+import qualified Data.List as List
 import qualified Data.Text as Text
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Encoding as Text.Encoding
@@ -87,7 +89,8 @@ requestBody (Request body _) = body
 
 -- | Extract a list of URL variables.
 --
--- The example below uses a @name@ variable:
+-- If you're interested in a particular variable, use `requestParameter`
+-- instead.
 --
 -- > handleRequest :: Request -> Response
 -- > handleRequest req
@@ -97,15 +100,42 @@ requestBody (Request body _) = body
 -- >
 -- > helloHandler :: Handler
 -- > helloHandler
+-- >   = simpleHandler GET "/hello/:name/:color" handleRequest
+--
+-- >>> curl localhost:7879/hello/tom/red
+-- [("name", "tom"), ("color", "red")]
+--
+-- >>> curl localhost:7879/hello/alice/blue
+-- [("name", "alice"), ("color", "blue")]
+requestParams :: Request -> [(String, String)]
+requestParams (Request _ params) = params
+
+-- | Extract a URL variable.
+--
+-- The example below tries to get @name@ from the path:
+--
+-- > handleRequest :: Request -> Response
+-- > handleRequest req
+-- >   = stringResponse (requestParameter "name" req)
+-- >
+-- > helloHandler :: Handler
+-- > helloHandler
 -- >   = simpleHandler GET "/hello/:name" handleRequest
 --
 -- >>> curl localhost:7879/hello/tom
--- [("name", "tom")]
+-- Just "tom"
 --
 -- >>> curl localhost:7879/hello/alice
--- [("name", "alice")]
-requestParams :: Request -> [(String, String)]
-requestParams (Request _ params) = params
+-- Just "alice"
+requestParameter :: String -> Request -> Maybe String
+requestParameter param req
+  = snd <$> search
+  where
+    search
+      = List.find
+          (\(k, _) -> k == param)
+          (requestParams req)
+
 
 data ResponseType
   = StringResponse

@@ -4,23 +4,22 @@
 -}
 module TodoMVC.Backend where
 
-import qualified TodoMVC.Core as Core
 import TodoMVC.Input
 
-import qualified Data.List as List
+import qualified TodoMVC.Core as Core
+import qualified TodoMVC.HTTP as HTTP
 import qualified Zero.Server as Server
+
 
 main :: IO ()
 main
-  = Server.startServer
-      [ Server.handlersWithState Core.initialState
-          [ Server.statefulHandler Server.GET    "/api" getAll
-          , Server.statefulHandler Server.POST   "/api" postTodo
-          , Server.statefulHandler Server.DELETE "/api" deleteAll
-          , Server.statefulHandler Server.GET    "/api/:id" getTodo
-          , Server.statefulHandler Server.PATCH  "/api/:id" patchTodo
-          , Server.statefulHandler Server.DELETE "/api/:id" deleteTodo
-          ]
+  = HTTP.startServer Core.initialState
+      [ HTTP.get    "/api" getAll
+      , HTTP.post   "/api" postTodo
+      , HTTP.delete "/api" deleteAll
+      , HTTP.get    "/api/:id" getTodo
+      , HTTP.patch  "/api/:id" patchTodo
+      , HTTP.delete "/api/:id" deleteTodo
       ]
 
   where
@@ -59,20 +58,15 @@ findTodoOrFail
   -> (Core.Todo -> (Core.State, Server.Response))
   -> (Core.State, Server.Response)
 findTodoOrFail state req cb
-  = case maybeUrlId of
+  = case Server.requestParameter "id" req of
       Nothing ->
         (state, Server.failureResponse "No :id found in URL")
-      Just (_, tId) ->
+      Just tId ->
         case Core.findTodo state tId of
           Nothing ->
             (state, Server.failureResponse "Todo not found")
           Just todo ->
             cb todo
-  where
-    maybeUrlId
-      = List.find
-          (\(k, _) -> k == "id")
-          (Server.requestParams req)
 
 decodeInputOrFail
   :: Core.State
