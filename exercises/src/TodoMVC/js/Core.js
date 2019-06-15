@@ -1,12 +1,3 @@
-const todoFromPartial = (tId, input) => {
-  return {
-    title: input.title || "",
-    completed: false,
-    url: "http://localhost:7879/api/" + tId,
-    todoId: tId,
-    order: input.order
-  }
-}
 
 module.exports = {
   initialState: {
@@ -14,10 +5,16 @@ module.exports = {
     nextIndex: 1
   },
 
-  createTodo: (state, input) => {
+  createTodo: (state, todoTitle, todoOrder) => {
     const index = state.nextIndex
     const tId = "" + index
-    const newTodo = todoFromPartial(tId, input)
+    const newTodo = {
+      title: todoTitle,
+      completed: false,
+      url: "http://localhost:7879/api/" + tId,
+      todoId: tId,
+      order: todoOrder
+    }
     const newState = {
       todos: { ...state.todos, [tId]: newTodo },
       nextIndex: index + 1
@@ -25,15 +22,15 @@ module.exports = {
     return [newState, newTodo]
   },
 
-  updateTodo: (state, existing, input) => {
-    const newState = { ...state.todos, [existing.todoId]: updated }
-
+  updateTodo: (state, existing, todoTitle, todoCompleted, todoOrder) => {
     const updated = {
       ...existing,
-      title: input.title || existing.title,
-      completed: input.completed || existing.completed,
-      order: input.order
+      title: withDefault(existing.title, todoTitle),
+      completed: withDefault(existing.completed, todoCompleted),
+      order: todoOrder
     }
+
+    const newState = { ...state.todos, [existing.todoId]: updated }
 
     return [newState, updated]
   },

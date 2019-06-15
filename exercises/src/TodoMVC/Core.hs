@@ -55,7 +55,13 @@ createTodo state todoTitle todoOrder
           , nextIndex = index + 1
           }
 
-updateTodo :: State -> Todo -> Maybe String -> Maybe Bool -> Maybe Int -> (State, Todo)
+updateTodo
+  :: State
+  -> Todo
+  -> Maybe String
+  -> Maybe Bool
+  -> Maybe Int
+  -> (State, Todo)
 updateTodo state existing todoTitle todoCompleted todoOrder
   = (newState, updated)
   where
@@ -65,8 +71,8 @@ updateTodo state existing todoTitle todoCompleted todoOrder
 
     updated
       = existing
-          { title = fromMaybe (title existing) todoTitle
-          , completed = fromMaybe (completed existing) todoCompleted
+          { title = withDefault (title existing) todoTitle
+          , completed = withDefault (completed existing) todoCompleted
           , order = todoOrder
           }
 
@@ -81,3 +87,7 @@ findTodo state tId
 stateToList :: State -> [Todo]
 stateToList state
   = snd <$> Map.toList (todos state)
+
+-- Forgive me Padre
+withDefault :: a -> Maybe a -> a
+withDefault = fromMaybe

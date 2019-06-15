@@ -29,11 +29,11 @@ main
     postTodo state req
       = decodeInputOrFail state req $ \input ->
           case title input of
+            Nothing ->
+              (state, Server.failureResponse "Empty title")
             Just todoTitle ->
               let (newState, newTodo) = Core.createTodo state todoTitle (order input)
               in (newState, Server.jsonResponse newTodo)
-            Nothing ->
-              (state, Server.failureResponse "Empty title")
 
     deleteAll _ _
       = (Core.initialState, Server.stringResponse "ok")
