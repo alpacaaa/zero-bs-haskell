@@ -32,7 +32,8 @@ main
             Nothing ->
               (state, Server.failureResponse "Empty title")
             Just todoTitle ->
-              let (newState, newTodo) = Core.createTodo state todoTitle (order input)
+              let (newState, newTodo)
+                    = Core.createTodo state todoTitle (order input)
               in (newState, Server.jsonResponse newTodo)
 
     deleteAll _ _
@@ -45,7 +46,12 @@ main
     patchTodo state req
       = findTodoOrFail state req $ \existing ->
           decodeInputOrFail state req $ \input ->
-            let (newState, updated) = Core.updateTodo state existing (title input) (completed input) (order input)
+            let (newState, updated) = Core.updateTodo
+                  state
+                  existing
+                  (title input)
+                  (completed input)
+                  (order input)
             in (newState, Server.jsonResponse updated)
 
     deleteTodo state req

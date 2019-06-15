@@ -64,6 +64,21 @@ const findTodoOrFail = (state, req, cb) => {
   }
 }
 
+const patchTodo = (state, req, next) => {
+  findTodoOrFail(state, req, existing => {
+    decodeInputOrFail(state, req, input => {
+      let [newState, updated] = Core.updateTodo(
+        state,
+        existing,
+        input.title,
+        input.completed,
+        input.order
+      )
+      next(newState, jsonResponse(updated))
+    })
+  })
+}
+
 app.get("/api", getAll)
 app.post("/api", postTodo)
 

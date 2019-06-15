@@ -1,4 +1,3 @@
-
 module.exports = {
   initialState: {
     todos: {},
@@ -36,8 +35,10 @@ module.exports = {
   },
 
   deleteTodo: (state, todo) => {
-    delete state.todos[todo.todoId]
-    return state
+    const newState = { ...state.todos }
+
+    delete newState[todo.todoId]
+    return newState
   },
 
   findTodo: (state, tId) => {
