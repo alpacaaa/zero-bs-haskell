@@ -5,7 +5,7 @@
 module TodoMVC.Backend where
 
 import qualified TodoMVC.Core as Core
-import qualified TodoMVC.Partial as Partial
+import TodoMVC.Input
 
 import qualified Data.List as List
 import qualified Zero.Server as Server
@@ -29,8 +29,12 @@ main
 
     postTodo state req
       = decodeInputOrFail state req $ \input ->
-          let (newState, newTodo) = Core.createTodo state input
-          in (newState, Server.jsonResponse newTodo)
+          case title input of
+            Just todoTitle ->
+              let (newState, newTodo) = Core.createTodo state todoTitle (order input)
+              in (newState, Server.jsonResponse newTodo)
+            Nothing ->
+              (state, Server.failureResponse "Empty title")
 
     deleteAll _ _
       = (Core.initialState, Server.stringResponse "ok")
@@ -42,7 +46,7 @@ main
     patchTodo state req
       = findTodoOrFail state req $ \existing ->
           decodeInputOrFail state req $ \input ->
-            let (newState, updated) = Core.updateTodo state existing input
+            let (newState, updated) = Core.updateTodo state existing (title input) (completed input) (order input)
             in (newState, Server.jsonResponse updated)
 
     deleteTodo state req
@@ -73,7 +77,7 @@ findTodoOrFail state req cb
 decodeInputOrFail
   :: Core.State
   -> Server.Request
-  -> (Partial.PartialTodo -> (Core.State, Server.Response))
+  -> (Input -> (Core.State, Server.Response))
   -> (Core.State, Server.Response)
 decodeInputOrFail state req cb
   = case Server.decodeJson (Server.requestBody req) of
