@@ -79,16 +79,11 @@ const patchTodo = (state, req, next) => {
   })
 }
 
-app.get("/api", getAll)
-app.post("/api", postTodo)
-
-Server.startServer([
-  Server.handlersWithState(Core.initialState, [
-    Server.statefulHandler(Server.GET, "/api", getAll),
-    Server.statefulHandler(Server.POST, "/api", postTodo),
-    Server.statefulHandler(Server.DELETE, "/api", deleteAll),
-    Server.statefulHandler(Server.GET, "/api/:id", getTodo),
-    Server.statefulHandler(Server.PATCH, "/api/:id", patchTodo),
-    Server.statefulHandler(Server.DELETE, "/api/:id", deleteTodo)
-  ])
+HTTP.startServer(Core.initialState, [
+  HTTP.get("/api", getAll),
+  HTTP.post("/api", postTodo),
+  HTTP.delete("/api", deleteAll),
+  HTTP.get("/api/:id", getTodo),
+  HTTP.patch("/api/:id", patchTodo),
+  HTTP.delete("/api/:id", deleteTodo)
 ])
