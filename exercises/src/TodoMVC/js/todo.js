@@ -1,5 +1,5 @@
 const Core = require("./Core")
-const app = require("express")()
+const HTTP = require("./HTTP")
 
 const createStore = currentState => {
   return cb => {
@@ -13,24 +13,6 @@ const createStore = currentState => {
     }
   }
 }
-
-const withState = createStore(Core.initialState)
-
-const decodeInputOrFail = (state, req, cb) => {
-  // something something req.body
-}
-
-const getAll = withState(({ state, update }, req, res) => {
-  res.json(Core.stateToList(state))
-})
-
-const postTodo = withState(({ state, update }, req, res) => {
-  decodeInputOrFail(state, req, input => {
-    const [newState, newTodo] = Core.createTodo(state, input)
-    update(newState)
-    res.json(newTodo)
-  })
-})
 
 // ------
 const getAll = (state, _, next) => {
@@ -48,20 +30,20 @@ const postTodo = (state, req, next) => {
   })
 }
 
-const findTodoOrFail = (state, req, cb) => {
-  let urlId = req.urlParam("id")
+const deleteAll = (state, _, next) => {
+  next(Core.initialState, jsonResponse("ok"))
+}
 
-  if (urlId === null) {
-    return [state, failureResponse("No :id found in URL")]
-  } else {
-    let todo = Core.findTodo(state, urlId)
+const getTodo = (state, req, next) => {
+  findTodoOrFail(state, req, todo => {
+    next(state, jsonResponse(todo))
+  })
+}
 
-    if (todo === null) {
-      return [state, failureResponse("Todo not found")]
-    } else {
-      return cb(todo)
-    }
-  }
+const deleteTodo = (state, req, next) => {
+  findTodoOrFail(state, req, todo => {
+    next(Core.deleteTodo(state, todo), jsonResponse("ok"))
+  })
 }
 
 const patchTodo = (state, req, next) => {
@@ -77,6 +59,27 @@ const patchTodo = (state, req, next) => {
       next(newState, jsonResponse(updated))
     })
   })
+}
+
+const decodeInputOrFail = (state, req, cb) => {
+  // something something req.body
+  cb(req.body)
+}
+
+const findTodoOrFail = (state, req, cb) => {
+  let urlId = req.urlParam("id")
+
+  if (urlId === null) {
+    return [state, failureResponse("No :id found in URL")]
+  } else {
+    let todo = Core.findTodo(state, urlId)
+
+    if (todo === null) {
+      return [state, failureResponse("Todo not found")]
+    } else {
+      return cb(todo)
+    }
+  }
 }
 
 HTTP.startServer(Core.initialState, [
