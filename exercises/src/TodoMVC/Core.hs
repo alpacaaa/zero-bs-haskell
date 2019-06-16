@@ -34,26 +34,21 @@ initialState
       }
 
 createTodo :: State -> String -> Maybe Int -> (State, Todo)
-createTodo state todoTitle todoOrder
-  = (newState, newTodo)
-  where
-    index
-      = nextIndex state
-    tId
-      = show index
-    newTodo
-      = Todo
-          { title = todoTitle
-          , completed = False
-          , url = "http://localhost:7879/api/" ++ tId
-          , todoId = tId
-          , order = todoOrder
-          }
-    newState
-      = State
-          { todos = Map.insert tId newTodo (todos state)
-          , nextIndex = index + 1
-          }
+createTodo state todoTitle todoOrder =
+  let index = nextIndex state
+      tId = show index
+      newTodo = Todo
+        { title = todoTitle
+        , completed = False
+        , url = "http://localhost:7879/api/" ++ tId
+        , todoId = tId
+        , order = todoOrder
+        }
+      newState = State
+        { todos = Map.insert tId newTodo (todos state)
+        , nextIndex = index + 1
+        }
+  in (newState, newTodo)
 
 updateTodo
   :: State
@@ -62,19 +57,20 @@ updateTodo
   -> Maybe Bool
   -> Maybe Int
   -> (State, Todo)
-updateTodo state existing todoTitle todoCompleted todoOrder
-  = (newState, updated)
-  where
-    newState
-      = state
-          { todos = Map.insert (todoId existing) updated (todos state) }
-
+updateTodo state existing todoTitle todoCompleted todoOrder =
+  let
     updated
       = existing
           { title = withDefault (title existing) todoTitle
           , completed = withDefault (completed existing) todoCompleted
           , order = todoOrder
           }
+
+    newState
+      = state
+          { todos = Map.insert (todoId existing) updated (todos state) }
+
+  in (newState, updated)
 
 deleteTodo :: State -> Todo -> State
 deleteTodo state todo

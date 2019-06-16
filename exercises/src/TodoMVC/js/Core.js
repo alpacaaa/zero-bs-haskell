@@ -5,16 +5,16 @@ module.exports = {
   },
 
   createTodo: (state, todoTitle, todoOrder) => {
-    const index = state.nextIndex
-    const tId = "" + index
-    const newTodo = {
+    let index = state.nextIndex
+    tId = "" + index
+    newTodo = {
       title: todoTitle,
       completed: false,
       url: "http://localhost:7879/api/" + tId,
       todoId: tId,
       order: todoOrder
     }
-    const newState = {
+    newState = {
       todos: { ...state.todos, [tId]: newTodo },
       nextIndex: index + 1
     }
@@ -29,16 +29,19 @@ module.exports = {
       order: todoOrder
     }
 
-    const newState = { ...state.todos, [existing.todoId]: updated }
+    const newState = {
+      ...state,
+      todos: { ...state.todos, [existing.todoId]: updated }
+    }
 
     return [newState, updated]
   },
 
   deleteTodo: (state, todo) => {
-    const newState = { ...state.todos }
+    const todos = { ...state.todos }
 
-    delete newState[todo.todoId]
-    return newState
+    delete todos[todo.todoId]
+    return { ...state, todos }
   },
 
   findTodo: (state, tId) => {
@@ -49,3 +52,5 @@ module.exports = {
     return Object.values(state.todos)
   }
 }
+
+withDefault = (def, maybe) => (maybe === null ? def : maybe)

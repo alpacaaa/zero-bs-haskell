@@ -33,7 +33,10 @@ main
               (state, Server.failureResponse "Empty title")
             Just todoTitle ->
               let (newState, newTodo)
-                    = Core.createTodo state todoTitle (order input)
+                    = Core.createTodo
+                        state
+                        todoTitle
+                        (order input)
               in (newState, Server.jsonResponse newTodo)
 
     deleteAll _ _

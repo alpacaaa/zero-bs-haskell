@@ -2,29 +2,32 @@ const express = require("express")
 const cors = require("cors")
 
 const createStore = currentState => {
-  return cb => {
-    return (req, res, next) => {
-      const store = {
-        state: currentState,
-        update: newState => (currentState = newState)
-      }
-
-      cb(store, req, res)
+  return {
+    state: () => currentState,
+    update: newState => {
+      console.log("Updating state")
+      console.log(newState)
+      currentState = newState
     }
   }
 }
 
 const httpHandler = method => (path, handler) => (app, store) => {
   app[method](path, (rawReq, res, next) => {
-    const req = {} // todo
-    const state = store.state
-    handler(state, req, ([newState, response]) => {
-      store.update(newState)
-      if (response.type === "json") {
-        res.json(response.body)
-      }
-      res.json("WTF")
-    })
+    const req = { body: rawReq.body, params: rawReq.params } // todo
+    const [newState, response] = handler(store.state(), req)
+
+    store.update(newState)
+
+    if (response.type === "json") {
+      return res.json(response.body)
+    }
+
+    if (response.type === "failure") {
+      return res.status(500).send(response.error)
+    }
+
+    res.json("WTF")
   })
 }
 
@@ -40,10 +43,22 @@ const startServer = (initialState, handlers) => {
   app.listen(7879)
 }
 
+const jsonResponse = json => ({ type: "json", body: json })
+const failureResponse = err => ({ type: "failure", error: err })
+
+// A bit stupid, but needed to keep compatibility with Haskell api
+const stringResponse = jsonResponse
+
+const requestParameter = (req, param) => req.params[param]
+
 module.exports = {
-  get: httpHandler,
-  post: httpHandler,
-  patch: httpHandler,
-  delete: httpHandler,
-  startServer
+  get: httpHandler("get"),
+  post: httpHandler("post"),
+  patch: httpHandler("patch"),
+  delete: httpHandler("delete"),
+  startServer,
+  jsonResponse,
+  stringResponse,
+  failureResponse,
+  requestParameter
 }

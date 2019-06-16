@@ -1,53 +1,40 @@
 const Core = require("./Core")
 const HTTP = require("./HTTP")
 
-const createStore = currentState => {
-  return cb => {
-    return (req, res, next) => {
-      const store = {
-        state: currentState,
-        update: newState => (currentState = newState)
-      }
-
-      cb(store, req, res)
-    }
-  }
-}
+main = () =>
+  HTTP.startServer(Core.initialState, [
+    HTTP.get("/api", getAll),
+    HTTP.post("/api", postTodo),
+    HTTP.delete("/api", deleteAll),
+    HTTP.get("/api/:id", getTodo),
+    HTTP.patch("/api/:id", patchTodo),
+    HTTP.delete("/api/:id", deleteTodo)
+  ])
 
 // ------
-const getAll = (state, _, next) => {
-  next(state, jsonResponse(Core.stateToList(state)))
-}
+getAll = (state, _) => [state, HTTP.jsonResponse(Core.stateToList(state))]
 
-const postTodo = (state, req, next) => {
+postTodo = (state, req) =>
   decodeInputOrFail(state, req, input => {
     if (input.title === null) {
-      next(state, failureResponse("Empty title"))
+      return [state, HTTP.failureResponse("Empty title")]
     } else {
-      const [newState, newTodo] = Core.createTodo(state, input)
-      next(newState, jsonResponse(newTodo))
+      const [newState, newTodo] = Core.createTodo(
+        state,
+        input.title,
+        input.order
+      )
+      return [newState, HTTP.jsonResponse(newTodo)]
     }
   })
-}
 
-const deleteAll = (state, _, next) => {
-  next(Core.initialState, jsonResponse("ok"))
-}
+deleteAll = (state, _) => [Core.initialState, HTTP.stringResponse("ok")]
 
-const getTodo = (state, req, next) => {
-  findTodoOrFail(state, req, todo => {
-    next(state, jsonResponse(todo))
-  })
-}
+getTodo = (state, req) =>
+  findTodoOrFail(state, req, todo => [state, HTTP.jsonResponse(todo)])
 
-const deleteTodo = (state, req, next) => {
-  findTodoOrFail(state, req, todo => {
-    next(Core.deleteTodo(state, todo), jsonResponse("ok"))
-  })
-}
-
-const patchTodo = (state, req, next) => {
-  findTodoOrFail(state, req, existing => {
+patchTodo = (state, req) =>
+  findTodoOrFail(state, req, existing =>
     decodeInputOrFail(state, req, input => {
       let [newState, updated] = Core.updateTodo(
         state,
@@ -56,37 +43,39 @@ const patchTodo = (state, req, next) => {
         input.completed,
         input.order
       )
-      next(newState, jsonResponse(updated))
+      return [newState, HTTP.jsonResponse(updated)]
     })
-  })
-}
+  )
 
-const decodeInputOrFail = (state, req, cb) => {
-  // something something req.body
-  cb(req.body)
-}
+deleteTodo = (state, req) =>
+  findTodoOrFail(state, req, todo => [
+    Core.deleteTodo(state, todo),
+    HTTP.stringResponse("ok")
+  ])
 
-const findTodoOrFail = (state, req, cb) => {
-  let urlId = req.urlParam("id")
+findTodoOrFail = (state, req, cb) => {
+  let tId = HTTP.requestParameter(req, "id")
 
-  if (urlId === null) {
-    return [state, failureResponse("No :id found in URL")]
+  if (tId === null) {
+    return [state, HTTP.failureResponse("No :id found in URL")]
   } else {
-    let todo = Core.findTodo(state, urlId)
+    let todo = Core.findTodo(state, tId)
 
     if (todo === null) {
-      return [state, failureResponse("Todo not found")]
+      return [state, HTTP.failureResponse("Todo not found")]
     } else {
       return cb(todo)
     }
   }
 }
 
-HTTP.startServer(Core.initialState, [
-  HTTP.get("/api", getAll),
-  HTTP.post("/api", postTodo),
-  HTTP.delete("/api", deleteAll),
-  HTTP.get("/api/:id", getTodo),
-  HTTP.patch("/api/:id", patchTodo),
-  HTTP.delete("/api/:id", deleteTodo)
-])
+decodeInputOrFail = (state, req, cb) => {
+  const input = req.body
+  input.title = input.title === undefined ? null : input.title
+  input.completed = input.completed === undefined ? null : input.completed
+  input.order = input.order === undefined ? null : input.order
+
+  return cb(input)
+}
+
+main()
