@@ -10,6 +10,7 @@ import qualified TodoMVC.Core as Core
 import qualified TodoMVC.HTTP as HTTP
 import qualified Zero.Server as Server
 
+type Handler = Core.State -> Server.Request -> (Core.State, Server.Response)
 
 main :: IO ()
 main
@@ -22,44 +23,49 @@ main
       , HTTP.delete "/api/:id" deleteTodo
       ]
 
-  where
-    getAll state _
-      = (state, Server.jsonResponse $ Core.stateToList state)
+getAll :: Handler
+getAll state _
+  = (state, Server.jsonResponse $ Core.stateToList state)
 
-    postTodo state req
-      = decodeInputOrFail state req $ \input ->
-          case title input of
-            Nothing ->
-              (state, Server.failureResponse "Empty title")
-            Just todoTitle ->
-              let (newState, newTodo)
-                    = Core.createTodo
-                        state
-                        todoTitle
-                        (order input)
-              in (newState, Server.jsonResponse newTodo)
+postTodo :: Handler
+postTodo state req
+  = decodeInputOrFail state req $ \input ->
+      case title input of
+        Nothing ->
+          (state, Server.failureResponse "Empty title")
+        Just todoTitle ->
+          let (newState, newTodo)
+                = Core.createTodo
+                    state
+                    todoTitle
+                    (order input)
+          in (newState, Server.jsonResponse newTodo)
 
-    deleteAll _ _
-      = (Core.initialState, Server.stringResponse "ok")
+deleteAll :: Handler
+deleteAll _ _
+  = (Core.initialState, Server.stringResponse "ok")
 
-    getTodo state req
-      = findTodoOrFail state req $ \todo ->
-          (state, Server.jsonResponse todo)
+getTodo :: Handler
+getTodo state req
+  = findTodoOrFail state req $ \todo ->
+      (state, Server.jsonResponse todo)
 
-    patchTodo state req
-      = findTodoOrFail state req $ \existing ->
-          decodeInputOrFail state req $ \input ->
-            let (newState, updated) = Core.updateTodo
-                  state
-                  existing
-                  (title input)
-                  (completed input)
-                  (order input)
-            in (newState, Server.jsonResponse updated)
+patchTodo :: Handler
+patchTodo state req
+  = findTodoOrFail state req $ \existing ->
+      decodeInputOrFail state req $ \input ->
+        let (newState, updated) = Core.updateTodo
+              state
+              existing
+              (title input)
+              (completed input)
+              (order input)
+        in (newState, Server.jsonResponse updated)
 
-    deleteTodo state req
-      = findTodoOrFail state req $ \todo ->
-          (Core.deleteTodo state todo, Server.stringResponse "ok")
+deleteTodo:: Handler
+deleteTodo state req
+  = findTodoOrFail state req $ \todo ->
+      (Core.deleteTodo state todo, Server.stringResponse "ok")
 
 findTodoOrFail
   :: Core.State

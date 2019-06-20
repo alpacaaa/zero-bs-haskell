@@ -1,5 +1,6 @@
 const Core = require("./Core")
 const HTTP = require("./HTTP")
+const Server = HTTP.Server
 
 main = () =>
   HTTP.startServer(Core.initialState, [
@@ -12,26 +13,26 @@ main = () =>
   ])
 
 // ------
-getAll = (state, _) => [state, HTTP.jsonResponse(Core.stateToList(state))]
+getAll = (state, _) => [state, Server.jsonResponse(Core.stateToList(state))]
 
 postTodo = (state, req) =>
   decodeInputOrFail(state, req, input => {
     if (input.title === null) {
-      return [state, HTTP.failureResponse("Empty title")]
+      return [state, Server.failureResponse("Empty title")]
     } else {
       const [newState, newTodo] = Core.createTodo(
         state,
         input.title,
         input.order
       )
-      return [newState, HTTP.jsonResponse(newTodo)]
+      return [newState, Server.jsonResponse(newTodo)]
     }
   })
 
-deleteAll = (state, _) => [Core.initialState, HTTP.stringResponse("ok")]
+deleteAll = (state, _) => [Core.initialState, Server.stringResponse("ok")]
 
 getTodo = (state, req) =>
-  findTodoOrFail(state, req, todo => [state, HTTP.jsonResponse(todo)])
+  findTodoOrFail(state, req, todo => [state, Server.jsonResponse(todo)])
 
 patchTodo = (state, req) =>
   findTodoOrFail(state, req, existing =>
@@ -43,26 +44,26 @@ patchTodo = (state, req) =>
         input.completed,
         input.order
       )
-      return [newState, HTTP.jsonResponse(updated)]
+      return [newState, Server.jsonResponse(updated)]
     })
   )
 
 deleteTodo = (state, req) =>
   findTodoOrFail(state, req, todo => [
     Core.deleteTodo(state, todo),
-    HTTP.stringResponse("ok")
+    Server.stringResponse("ok")
   ])
 
 findTodoOrFail = (state, req, cb) => {
-  let tId = HTTP.requestParameter(req, "id")
+  let tId = Server.requestParameter(req, "id")
 
   if (tId === null) {
-    return [state, HTTP.failureResponse("No :id found in URL")]
+    return [state, Server.failureResponse("No :id found in URL")]
   } else {
     let todo = Core.findTodo(state, tId)
 
     if (todo === null) {
-      return [state, HTTP.failureResponse("Todo not found")]
+      return [state, Server.failureResponse("Todo not found")]
     } else {
       return cb(todo)
     }

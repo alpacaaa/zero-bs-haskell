@@ -57,8 +57,10 @@ module.exports = {
   patch: httpHandler("patch"),
   delete: httpHandler("delete"),
   startServer,
-  jsonResponse,
-  stringResponse,
-  failureResponse,
-  requestParameter
+  Server: {
+    jsonResponse,
+    stringResponse,
+    failureResponse,
+    requestParameter
+  }
 }
