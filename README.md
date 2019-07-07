@@ -52,10 +52,15 @@
   - [`FromJSON` and `ToJSON`](#toc-fromjson-tojson)
 
 - [Dealing with mutable state](#toc-dealing-state)
-  - [Modeling state the functional way ](#toc-modeling-state)
+  - [Modeling state the functional way](#toc-modeling-state)
   - [A slight detour in OTP land](#toc-detour-otp)
   - [Let the runtime handle state for you](#toc-runtime-handle)
 
+- [Install libraries from Hackage/Stackage](#toc-hackage-stackage)
+  - [Fun times](#toc-fun-times)
+  - [Hackage](#toc-hackage)
+  - [Stackage](#toc-stackage)
+  - [Packages that are not on Stackage](#toc-packages-not-stackage)
 &nbsp;
 
 
@@ -918,3 +923,42 @@ This is how we **model state in a functional way**.
 
 At the end of the day, there's still going to be some mutable variable that gets updated under the hood, but the benefit of using this approach is we only get to deal with the **nice api on top**. When writing a `gen_server` in Erlang you don't have to think about how to manage state, everything is taken care of, just supply a callback. The same goes for the `zero-bullshit` server, you just have to pick a `state` of your liking, handle the `Request` and return an updated version of the `state` together with a `Response`.
 
+---
+
+# <a id="toc-hackage-stackage"></a>Install libraries from Hackage/Stackage
+
+Haskell can be confusing. Or rather, the Haskell ecosystem can get pretty confusing. Turns out installing a library is super easy nonetheless, but it's worth going through it real quick.
+
+### <a id="toc-hackage"></a>Hackage
+
+In the beginning, it was Hackage. Hackage is just a website where users upload packages, pretty much as you would do with npmjs.com. You then list your dependencies in `package.yml` (which, you guessed it, is basically `package.json` in node.js) and you're good to go.
+
+### <a id="toc-fun-times"></a>Fun times
+
+Have you ever looked inside the `node_modules` folder?
+
+In node.js, dependencies that have other dependencies are installed _within_ the dependency. You end up with `node_modules` nested into other `node_modules`. That's because a dependency can exist at **different** versions even in the **same** project.
+
+Whether that's good or not I'll leave it to you to decide (hint, it's a bit shit). The important bit is that this is not how GHC works. GHC expects a specific package to exist only **once** at a **fixed** version (within the same project). This means that if two packages share a dependency, they'll have to agree on which version to use.
+
+Now imagine 10 or 15 packages all depending on the same package, but with different version constraints. Dependency resolution becomes impossible. Welcome to *cabal hell*.
+
+### <a id="toc-stackage"></a>Stackage
+
+Remember how we talked about the nice people behind the build tool `stack` — well, who could have possibly invented *stackage*?
+
+That's right, it's them striking again. (shout out FP Complete).
+
+Their solution to the dependency problem (which, by the way, is in no way specific to Haskell, other languages have exactly the same problem) was to _curate_ a set of packages that are known to work together and put them into a package set.
+
+In other words, the job of working out which packages build together (and most importantly, at which version) is taken care of.
+
+This is massively useful! It means when you need to install a package, you just open `package.yml` and add a new entry under the `dependencies` field **without** pinning a specific version (unless you have a very good reason to).
+
+### <a id="toc-packages-not-stackage"></a>Packages that are not on Stackage
+
+First of all, is Hackage deprecated? Absolutely not, Hackage is still the source for all the packages in Stackage. And I'm just used to the way documentation looks on the Hackage website that I spend pretty much all of my time there and zero time on the Stackage one.
+
+But it may happen that a package on Hackage is not present on Stackage. In fact, a lot of packages (either forgotten, never updated or not deemed production ready) can be found on Hackage but never make it to Stackage. It could also happen that a package was at some point in a Stackage package set, but because it failed to build or couldn't be maintained anymore, it got dropped in a more recent package set.
+
+In a nutshell, you should be able to find everything you need, especially in the beginning. When you'll find yourself needing a package that's only available on Hackage, `stack` will warn you and will provide instructions on how to tweak your `stack.yml` file accordingly. It's super painless and working with a package set is really really nice.
