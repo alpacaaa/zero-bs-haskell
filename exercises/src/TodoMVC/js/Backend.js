@@ -71,10 +71,11 @@ findTodoOrFail = (state, req, cb) => {
 }
 
 decodeInputOrFail = (state, req, cb) => {
-  const input = req.body
-  input.title = input.title === undefined ? null : input.title
-  input.completed = input.completed === undefined ? null : input.completed
-  input.order = input.order === undefined ? null : input.order
+  const input = {
+    title: req.body.title === undefined ? null : req.body.title,
+    completed: req.body.completed === undefined ? null : req.body.completed,
+    order: req.body.order === undefined ? null : req.body.order
+  }
 
   return cb(input)
 }
