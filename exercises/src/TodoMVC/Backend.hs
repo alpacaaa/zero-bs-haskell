@@ -29,7 +29,7 @@ getAll state _
 
 postTodo :: Handler
 postTodo state req
-  = decodeInputOrFail state req $ \input ->
+  = decodeRequestOrFail state req $ \input ->
       case title input of
         Nothing ->
           (state, Server.failureResponse "Empty title")
@@ -53,7 +53,7 @@ getTodo state req
 patchTodo :: Handler
 patchTodo state req
   = findTodoOrFail state req $ \existing ->
-      decodeInputOrFail state req $ \input ->
+      decodeRequestOrFail state req $ \input ->
         let (newState, updated) = Core.updateTodo
               state
               existing
@@ -83,12 +83,12 @@ findTodoOrFail state req cb
           Just todo ->
             cb todo
 
-decodeInputOrFail
+decodeRequestOrFail
   :: Core.State
   -> Server.Request
   -> (Input -> (Core.State, Server.Response))
   -> (Core.State, Server.Response)
-decodeInputOrFail state req cb
+decodeRequestOrFail state req cb
   = case Server.decodeJson (Server.requestBody req) of
       Left err ->
         (state, Server.failureResponse err)

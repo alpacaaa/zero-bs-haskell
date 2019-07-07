@@ -16,7 +16,7 @@ main = () =>
 getAll = (state, _) => [state, Server.jsonResponse(Core.stateToList(state))]
 
 postTodo = (state, req) =>
-  decodeInputOrFail(state, req, input => {
+  decodeRequestOrFail(state, req, input => {
     if (input.title === null) {
       return [state, Server.failureResponse("Empty title")]
     } else {
@@ -36,7 +36,7 @@ getTodo = (state, req) =>
 
 patchTodo = (state, req) =>
   findTodoOrFail(state, req, existing =>
-    decodeInputOrFail(state, req, input => {
+    decodeRequestOrFail(state, req, input => {
       let [newState, updated] = Core.updateTodo(
         state,
         existing,
@@ -70,11 +70,23 @@ findTodoOrFail = (state, req, cb) => {
   }
 }
 
-decodeInputOrFail = (state, req, cb) => {
+decodeRequestOrFail = (state, req, cb) => {
   const input = {
     title: req.body.title === undefined ? null : req.body.title,
     completed: req.body.completed === undefined ? null : req.body.completed,
     order: req.body.order === undefined ? null : req.body.order
+  }
+
+  if (input.title !== null && typeof input.title !== "string") {
+    return [state, Server.failureResponse("Field `title` must be a string")]
+  }
+
+  if (input.completed !== null && typeof input.completed !== "boolean") {
+    return [state, Server.failureResponse("Field `completed` must be a boolean")]
+  }
+
+  if (input.order !== null && typeof input.order !== "number") {
+    return [state, Server.failureResponse("Field `order` must be a number")]
   }
 
   return cb(input)
