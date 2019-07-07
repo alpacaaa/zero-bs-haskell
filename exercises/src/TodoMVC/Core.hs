@@ -57,13 +57,13 @@ updateTodo
   -> Maybe Bool
   -> Maybe Int
   -> (State, Todo)
-updateTodo state existing todoTitle todoCompleted todoOrder =
+updateTodo state existing newTitle newCompleted newOrder =
   let
     updated
       = existing
-          { title = withDefault (title existing) todoTitle
-          , completed = withDefault (completed existing) todoCompleted
-          , order = todoOrder
+          { title = withDefault (title existing) newTitle
+          , completed = withDefault (completed existing) newCompleted
+          , order = newOrder
           }
 
     newState

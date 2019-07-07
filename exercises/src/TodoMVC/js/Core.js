@@ -20,12 +20,12 @@ createTodo = (state, todoTitle, todoOrder) => {
   return [newState, newTodo]
 }
 
-updateTodo = (state, existing, todoTitle, todoCompleted, todoOrder) => {
+updateTodo = (state, existing, newTitle, newCompleted, newOrder) => {
   const updated = {
     ...existing,
-    title: withDefault(existing.title, todoTitle),
-    completed: withDefault(existing.completed, todoCompleted),
-    order: todoOrder
+    title: withDefault(existing.title, newTitle),
+    completed: withDefault(existing.completed, newCompleted),
+    order: newOrder
   }
 
   const newState = {
