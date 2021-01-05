@@ -1,5 +1,6 @@
 .stack-work/
 *.cabal
+!library/*.cabal
 *~
 .DS_Store
 node_modules/

@@ -1,0 +1,67 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: c53c6e297d1b7f30ec00e9ea1ad11f98c2c5c63a0172fdf748682c055c3b29bd
+
+name:           zero-bullshit
+version:        0.1.0.0
+synopsis:       A simple and mildly useful webserver library.
+description:    This Haskell package provides a very simple webserver implementation similar to @express.js@ or @sinatra@.
+                .
+                It comes as part of the <https://github.com/alpacaaa/zero-bullshit-haskell Zero Bullshit Haskell> project,
+                where you can learn Haskell with hands on exercises and bullshit free explanations!
+                .
+                To install this package, add it as an external dependency in your @stack.yaml@ (it's not on Hackage yet).
+                .
+                > # stack.yaml
+                >
+                > extra-deps:
+                > - github: alpacaaa/zero-bullshit-haskell
+                >   commit: master
+                >   subdirs:
+                >     - library
+                .
+                And then add @zero-bullshit@ as a dependency in @package.yaml@.
+                .
+                > # package.yaml
+                >
+                > dependencies:
+                > - base
+                > - zero-bullshit
+category:       Web
+homepage:       https://github.com/alpacaaa/zero-bullshit-haskell#readme
+bug-reports:    https://github.com/alpacaaa/zero-bullshit-haskell/issues
+author:         Marco Sampellegrini
+maintainer:     babbonatale@alpcaaa.net
+copyright:      2019 Marco Sampellegrini
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/alpacaaa/zero-bullshit-haskell
+
+library
+  exposed-modules:
+      Zero.Server
+  other-modules:
+      Paths_zero_bullshit
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Werror
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , containers
+    , http-types
+    , random
+    , scotty
+    , stm
+    , text
+    , wai
+    , wai-cors
+  default-language: Haskell2010
