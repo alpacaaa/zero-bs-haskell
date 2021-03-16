@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://www.youtube.com/channel/UCJiwOqQi88UZCe8w7lwV4gw"><img alt="Zero Bullshit Haskell Youtube channel" src="https://img.shields.io/badge/Youtube-channel-ff0000.svg?style=flat"></a>
-  <a href="https://alpacaaa.net/zero-bullshit-haskell/docs/"><img alt="Zero Bullshit Haddock documentation" src="https://img.shields.io/badge/docs-zero--bullshit-5E5184.svg?style=flat"></a>
+  <a href="https://alpacaaa.github.io/zero-bullshit-haskell/docs/"><img alt="Zero Bullshit Haddock documentation" src="https://img.shields.io/badge/docs-zero--bullshit-5E5184.svg?style=flat"></a>
 </p>
 
 
@@ -67,14 +67,14 @@
 # Exercises index
 
 #### Beginner
-- [Exercise #01 - Static String](https://alpacaaa.net/zero-bullshit-haskell/Ex01)
-- [Exercise #02 - Echo](https://alpacaaa.net/zero-bullshit-haskell/Ex02)
-- [Exercise #03 - Case match](https://alpacaaa.net/zero-bullshit-haskell/Ex03)
-- [Exercise #04 - String manipulation](https://alpacaaa.net/zero-bullshit-haskell/Ex04)
-- [Exercise #05 - On/Off switch](https://alpacaaa.net/zero-bullshit-haskell/Ex05)
-- [Exercise #06 - Counter](https://alpacaaa.net/zero-bullshit-haskell/Ex06)
-- [Exercise #07 - ShoppingCart](https://alpacaaa.net/zero-bullshit-haskell/Ex07)
-- [Exercise #08 - ShoppingCart V2](https://alpacaaa.net/zero-bullshit-haskell/Ex08)
+- [Exercise #01 - Static String](https://alpacaaa.github.io/zero-bullshit-haskell/Ex01)
+- [Exercise #02 - Echo](https://alpacaaa.github.io/zero-bullshit-haskell/Ex02)
+- [Exercise #03 - Case match](https://alpacaaa.github.io/zero-bullshit-haskell/Ex03)
+- [Exercise #04 - String manipulation](https://alpacaaa.github.io/zero-bullshit-haskell/Ex04)
+- [Exercise #05 - On/Off switch](https://alpacaaa.github.io/zero-bullshit-haskell/Ex05)
+- [Exercise #06 - Counter](https://alpacaaa.github.io/zero-bullshit-haskell/Ex06)
+- [Exercise #07 - ShoppingCart](https://alpacaaa.github.io/zero-bullshit-haskell/Ex07)
+- [Exercise #08 - ShoppingCart V2](https://alpacaaa.github.io/zero-bullshit-haskell/Ex08)
 
 _work in progress_
 
@@ -103,9 +103,9 @@ Exercises revolve around creating a webserver. It can be a very very simple webs
 
 You can fiddle with the exercises with very little effort, as they come with a test runner that runs in the browser and hits `http://localhost:7879` — where your Haskell server will be listening. That's right, no need to install any extra bullshit. All you need to do is go to the exercises website and start firing some AJAX requests. Read [Local dev environment and first exercise](#toc-solve-exercise).
 
-Perhpaps most importantly, all exercises have a **reference node.js implementation**. We'll discuss how each exercise could be solved using `express`, what the pitfalls of that implementation might be and how functional programming can help us in writing more robust code. Have a peak at [Exercise #01](https://alpacaaa.net/zero-bullshit-haskell/Ex01) to get an idea of how it works.
+Perhpaps most importantly, all exercises have a **reference node.js implementation**. We'll discuss how each exercise could be solved using `express`, what the pitfalls of that implementation might be and how functional programming can help us in writing more robust code. Have a peak at [Exercise #01](https://alpacaaa.github.io/zero-bullshit-haskell/Ex01) to get an idea of how it works.
 
-We're going to be using a Haskell [library](https://alpacaaa.net/zero-bullshit-haskell/docs) that is very similar in spirit and simplicity to `express`. In fact, I wrote it specifically for this project and I made sure it's devoid of any bullshit whatsoever. It's not production ready of course — we will transition to a more robust and widely used library later on.
+We're going to be using a Haskell [library](https://alpacaaa.github.io/zero-bullshit-haskell/docs) that is very similar in spirit and simplicity to `express`. In fact, I wrote it specifically for this project and I made sure it's devoid of any bullshit whatsoever. It's not production ready of course — we will transition to a more robust and widely used library later on.
 
 ### <a id="toc-scope"></a>Scope
 
@@ -312,9 +312,9 @@ dependencies:
 
 Let's now take a peek at the first exercise.
 
-[Exercise #01 - Static String](https://alpacaaa.net/zero-bullshit-haskell/Ex01)
+[Exercise #01 - Static String](https://alpacaaa.github.io/zero-bullshit-haskell/Ex01)
 
-I built all exercises so that they have an integration test that you can run straight from your browser. Head over to the [Exercise #01](https://alpacaaa.net/zero-bullshit-haskell/Ex01) page to see the `mocha` test runner ready to go. When you run the tests, they will hit `localhost:7879` which is where your server is going to be listening.
+I built all exercises so that they have an integration test that you can run straight from your browser. Head over to the [Exercise #01](https://alpacaaa.github.io/zero-bullshit-haskell/Ex01) page to see the `mocha` test runner ready to go. When you run the tests, they will hit `localhost:7879` which is where your server is going to be listening.
 
 Obviously we have nothing running locally yet, so you should see a message saying that your server isn't running.
 
@@ -759,7 +759,7 @@ myHandler req
 
 
 
-The first few Zero Bullshit Haskell exercises don't deal with JSON at all, but given that exercises are about writing webservers, then you need to understand how to work with JSON. [Exercise #07](https://alpacaaa.net/zero-bullshit-haskell/Ex07) is all about putting what we just discussed into practice. If something isn't clear, join the discussion in the relevant issue!
+The first few Zero Bullshit Haskell exercises don't deal with JSON at all, but given that exercises are about writing webservers, then you need to understand how to work with JSON. [Exercise #07](https://alpacaaa.github.io/zero-bullshit-haskell/Ex07) is all about putting what we just discussed into practice. If something isn't clear, join the discussion in the relevant issue!
 
 
 
