@@ -790,7 +790,7 @@ mutableCounter :: Int
 mutableCounter = 0
 
 counterHandler :: Server.Request -> Server.Response
-counterHandler = ???
+counterHandler _ = ???
 -- mutableCounter = mutableCounter + 1
 -- No way the compiler would allow that!
 ```
@@ -799,8 +799,8 @@ Ok fine, GHC always has to ruin the party. Let's try to model a change of state 
 
 ```haskell
 counterHandler :: Int -> Server.Request -> Server.Response
-counterHandler currentCount
-  = Server.simpleHandler $ "Current count: " ++ show (currentCount + 1)
+counterHandler currentCount _
+  = Server.stringResponse $ "Current count: " ++ show (currentCount + 1)
 ```
 
 This is fine, but `currentCount` is still an immutable value, so we can't do anything with it. Sure we can now return the current value to the client, but we can't update it.
@@ -810,13 +810,13 @@ Right now, our handler only returns a `Response`, but there's no reason why we c
 
 ```haskell
 counterHandler :: Int -> Server.Request -> (Int, Server.Response)
-counterHandler currentCount
+counterHandler currentCount _
   = (newCount, response)
   where
     newCount
       = currentCount + 1
     response
-      = Server.simpleHandler ("Current count: " ++ show newCount)
+      = Server.stringResponse ("Current count: " ++ show newCount)
 ```
 
 > Note how we now return a _tuple_ with two elements (the new state, the `Response`) instead of just the `Response`.
